@@ -1,9 +1,10 @@
 package edu.slu.parks.healthwatch;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,26 +12,51 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.slu.parks.healthwatch.settings.SettingsActivity;
+import edu.slu.parks.healthwatch.views.HealthSection;
+import edu.slu.parks.healthwatch.views.HelpSection;
+import edu.slu.parks.healthwatch.views.HistorySection;
+import edu.slu.parks.healthwatch.views.ISection;
+import edu.slu.parks.healthwatch.views.MeasureSection;
+
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        MeasureFragment.OnFragmentInteractionListener,
+        HelpFragment.OnFragmentInteractionListener,
+        HealthFragment.OnFragmentInteractionListener,
+        HistoryFragment.OnFragmentInteractionListener {
+
+    private int currentFragmentId;
+    private List<ISection> sections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        sections = new ArrayList<>();
+        sections.add(new HealthSection());
+        sections.add(new HelpSection());
+        sections.add(new HistorySection());
+        sections.add(new MeasureSection());
+        sections.add(new HealthSection());
+
+        ISection current = getSection(R.id.nav_measure);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.content_home, current.getFragment()).commit();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(current.getTitle());
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -68,6 +94,8 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -80,22 +108,65 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_settings) {
+            currentFragmentId = id;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else {
+            ISection section = getSection(id);
 
-        } else if (id == R.id.nav_slideshow) {
+            if (section != null && !section.isSection(currentFragmentId)) {
+                currentFragmentId = id;
 
-        } else if (id == R.id.nav_manage) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+                transaction.replace(R.id.content_home, section.getFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(item.getTitle());
+
         return true;
+    }
+
+    private ISection getSection(int id) {
+        int size = sections.size();
+
+        for (int i = 0; i < size; i++) {
+            if (sections.get(i).isSection(id)) return sections.get(i);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onMeasureButtonClick() {
+        Intent intent = new Intent(this, WaitingActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onHistoryButtonClick() {
+        ISection section = getSection(R.id.nav_history);
+
+        currentFragmentId = R.id.nav_history;
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        assert section != null;
+        transaction.replace(R.id.content_home, section.getFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
