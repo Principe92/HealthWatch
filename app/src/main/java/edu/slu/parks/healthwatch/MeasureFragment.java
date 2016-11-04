@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -28,6 +29,9 @@ public class MeasureFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private TextView diastolicView;
+    private TextView systolicView;
 
     public MeasureFragment() {
         // Required empty public constructor
@@ -83,6 +87,10 @@ public class MeasureFragment extends Fragment {
             }
         });
 
+        diastolicView = (TextView) view.findViewById(R.id.layout_diastolic).findViewById(R.id.txt_pressure);
+        systolicView = (TextView) view.findViewById(R.id.layout_systolic).findViewById(R.id.txt_pressure);
+
+        ((TextView) view.findViewById(R.id.layout_systolic).findViewById(R.id.txt_pressure_metric)).setText("Systolic (mmHg)");
         return view;
     }
 
