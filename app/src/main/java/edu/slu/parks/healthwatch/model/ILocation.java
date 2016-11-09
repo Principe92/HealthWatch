@@ -14,4 +14,6 @@ public interface ILocation {
     boolean isValid();
 
     Location getLocation();
+
+    boolean geoCoderIsPresent();
 }

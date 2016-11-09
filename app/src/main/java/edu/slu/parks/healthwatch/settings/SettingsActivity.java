@@ -1,19 +1,14 @@
 package edu.slu.parks.healthwatch.settings;
 
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 
-import java.util.List;
-
 import edu.slu.parks.healthwatch.AppCompatPreferenceActivity;
-import edu.slu.parks.healthwatch.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -65,11 +60,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * {@inheritDoc}
      */
-    @Override
+    /*@Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.pref_headers, target);
-    }
+    }*/
 
     /**
      * This method stops fragment injection in malicious applications.

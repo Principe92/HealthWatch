@@ -3,24 +3,25 @@ package edu.slu.parks.healthwatch.views;
 import android.support.v4.app.Fragment;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.fragments.HistoryFragment;
+import edu.slu.parks.healthwatch.fragments.SettingsFragment;
 
 /**
- * Created by okori on 10/31/2016.
+ * Created by okori on 07-Nov-16.
  */
-public class HistorySection implements ISection {
+
+public class SettingsSection implements ISection {
     @Override
     public Fragment getFragment() {
-        return new HistoryFragment();
+        return new SettingsFragment();
     }
 
     @Override
     public boolean isSection(int id) {
-        return id == R.id.nav_history;
+        return id == R.id.nav_settings;
     }
 
     @Override
     public int getTitle() {
-        return R.string.history;
+        return R.string.settings;
     }
 }

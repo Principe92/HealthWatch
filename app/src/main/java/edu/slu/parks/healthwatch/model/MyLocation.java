@@ -3,7 +3,9 @@ package edu.slu.parks.healthwatch.model;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Geocoder;
 import android.location.Location;
+import android.util.Log;
 
 import edu.slu.parks.healthwatch.R;
 
@@ -22,14 +24,18 @@ public class MyLocation implements ILocation {
     public void save() {
         SharedPreferences sharedPref = context.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong(context.getString(R.string.gps_latitude), (long) location.getLatitude());
-        editor.putLong(context.getString(R.string.gps_latitude), (long) location.getLatitude());
-        editor.apply();
+        editor.putLong(context.getString(R.string.gps_longitude), Double.doubleToRawLongBits(location.getLongitude()));
+        editor.putLong(context.getString(R.string.gps_latitude), Double.doubleToRawLongBits(location.getLatitude()));
+        editor.commit();
+
+        Log.d(this.getClass().getName(), "longitude: " + location.getLongitude());
+        Log.d(this.getClass().getName(), "latitude: " + location.getLatitude());
     }
 
     @Override
     public void update(Location location) {
-        this.location = location;
+        if (location != null)
+            this.location = location;
     }
 
     @Override
@@ -40,5 +46,10 @@ public class MyLocation implements ILocation {
     @Override
     public Location getLocation() {
         return this.location;
+    }
+
+    @Override
+    public boolean geoCoderIsPresent() {
+        return Geocoder.isPresent();
     }
 }

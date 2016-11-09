@@ -102,4 +102,5 @@
     <string name="no_geocoder_available">Unable to determine address</string>
     <string name="gps_latitude">gps_latitude</string>
     <string name="gps_longitude">gps_longitude</string>
+    <string name="gps_switch">gps_switch</string>
 </resources>

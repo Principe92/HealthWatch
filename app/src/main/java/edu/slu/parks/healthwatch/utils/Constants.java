@@ -21,4 +21,12 @@ public class Constants {
             ".LOCATION_DATA_EXTRA";
 
     public static final String TAG = "HealthWatch";
+    public static final int REQUEST_ACCESS_FINE_LOCATION = 200;
+    public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 201;
+    public static final String MEASURE_DIALOG = "measure_dialog";
+    public static final int REQUEST_CHECK_SETTINGS = 100;
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String SYSTOLIC = "systolic";
+    public static final String DIASTOLIC = "diastolic";
 }

@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.os.ResultReceiver;
 import android.text.TextUtils;
@@ -45,8 +44,11 @@ public class FetchAddressIntentService extends IntentService {
         String errorMessage = "";
 
         // Get the location passed to this service through an extra.
-        Location location = intent.getParcelableExtra(
-                Constants.LOCATION_DATA_EXTRA);
+        double latitude = intent.getDoubleExtra(Constants.LATITUDE, 0);
+        double longitude = intent.getDoubleExtra(Constants.LONGITUDE, 0);
+
+        Log.d(this.getClass().getName(), "longitude: " + longitude);
+        Log.d(this.getClass().getName(), "latitude: " + latitude);
 
         mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
@@ -54,8 +56,8 @@ public class FetchAddressIntentService extends IntentService {
 
         try {
             addresses = geocoder.getFromLocation(
-                    location.getLatitude(),
-                    location.getLongitude(),
+                    latitude,
+                    longitude,
                     // In this sample, get just a single address.
                     1);
         } catch (IOException ioException) {
@@ -66,9 +68,9 @@ public class FetchAddressIntentService extends IntentService {
             // Catch invalid latitude or longitude values.
             errorMessage = getString(R.string.invalid_lat_long_used);
             Log.e(TAG, errorMessage + ". " +
-                    "Latitude = " + location.getLatitude() +
+                    "Latitude = " + latitude +
                     ", Longitude = " +
-                    location.getLongitude(), illegalArgumentException);
+                    longitude, illegalArgumentException);
         }
 
         // Handle case where no address was found.

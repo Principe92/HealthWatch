@@ -1,19 +1,41 @@
 package edu.slu.parks.healthwatch;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.slu.parks.healthwatch.model.ILocation;
+import edu.slu.parks.healthwatch.model.MyLocation;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 
-public class WaitingActivity extends AppCompatActivity implements AlertDialogFragment.Listener {
+public class WaitingActivity extends AppCompatActivity implements AlertDialogFragment.Listener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
-    private static final String MEASURE_DIALOG = "measure_dialog";
+    private GoogleApiClient mGoogleApiClient;
+    private boolean includeLocation;
+    private ILocation gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,16 +46,87 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         toolbar.setTitle(R.string.measure);
         setSupportActionBar(toolbar);
 
+        gps = new MyLocation(this);
+        includeLocation = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.gps_switch), false);
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
-                startActivity(intent);
-            }
-        }, 5000);
+        if (!includeLocation) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
+                    intent.putExtra(Constants.SYSTOLIC, Math.abs(new Random().nextInt() % 220));
+                    intent.putExtra(Constants.DIASTOLIC, Math.abs(new Random().nextInt() % 220));
+                    startActivity(intent);
+                }
+            }, 5000);
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d(this.getLocalClassName(), "mGoogleApi Connected");
+
+
+        updateLocation();
+    }
+
+    private void updateLocation() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED || !includeLocation || !mGoogleApiClient.isConnected()) {
+
+            return;
+        }
+
+        gps.update(LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient));
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, createLocationRequest(), this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Unable to acquire gps location", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Unable to acquire gps location", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(this.getLocalClassName(), "onLocation changed");
+
+        if (includeLocation) {
+            gps.update(location);
+            gps.save();
+        }
+
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+
+        Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
+        intent.putExtra(Constants.SYSTOLIC, new Random().nextInt());
+        intent.putExtra(Constants.DIASTOLIC, new Random().nextInt());
+        startActivity(intent);
+    }
+
+    private LocationRequest createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return mLocationRequest;
     }
 
     @Override
@@ -46,11 +139,40 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
 
         AlertDialogFragment alert = new AlertDialogFragment();
         alert.setArguments(arg);
-        alert.show(getSupportFragmentManager(), MEASURE_DIALOG);
+        alert.show(getSupportFragmentManager(), Constants.MEASURE_DIALOG);
     }
 
     @Override
     public void onOkayButtonClick() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        updateLocation();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mGoogleApiClient.disconnect();
     }
 }

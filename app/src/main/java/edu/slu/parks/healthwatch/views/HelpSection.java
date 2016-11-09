@@ -2,8 +2,8 @@ package edu.slu.parks.healthwatch.views;
 
 import android.support.v4.app.Fragment;
 
-import edu.slu.parks.healthwatch.HelpFragment;
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.fragments.HelpFragment;
 
 /**
  * Created by okori on 10/31/2016.
