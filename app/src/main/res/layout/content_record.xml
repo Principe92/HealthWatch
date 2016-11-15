@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="Final reading"
+        android:text="@string/final_reading"
         android:textAlignment="center"
         android:textSize="15sp" />
 
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Include my location" />
+        android:text="@string/include_my_location" />
 
     <EditText
         android:id="@+id/txt_comment"
@@ -46,31 +46,34 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:ems="10"
-        android:hint="Enter your comment..."
+        android:hint="@string/enter_your_comment"
         android:inputType="textMultiLine"
         android:textSize="14sp" />
 
 
     <LinearLayout
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="33dp">
 
         <Button
             android:id="@+id/btn_save"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:text="Save" />
+            android:text="@string/save" />
 
         <Button
             android:id="@+id/btn_repeat"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:text="Repeat" />
+            android:text="@string/repeat" />
 
     </LinearLayout>
 </LinearLayout>

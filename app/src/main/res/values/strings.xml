@@ -11,7 +11,6 @@
     <string name="help">Help</string>
     <string name="settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -103,4 +102,20 @@
     <string name="gps_latitude">gps_latitude</string>
     <string name="gps_longitude">gps_longitude</string>
     <string name="gps_switch">gps_switch</string>
+    <string name="systolic_text">Systolic (mmHg)</string>
+    <string name="diastolic_text">Diastolic (mmHg)</string>
+    <string name="zero">0</string>
+    <string name="include_my_location">Include my location</string>
+    <string name="enter_your_comment">Enter your comment...</string>
+    <string name="save">Save</string>
+    <string name="repeat">Repeat</string>
+    <string name="see_history">See History</string>
+    <string name="measure_now">Measure Now</string>
+    <string name="unknown_location">Unknown location</string>
+    <string name="unknown_date">Unknown date</string>
+    <string name="latest_reading">Latest reading</string>
+    <string name="loading_location">Loading location...</string>
+    <string name="no_records_available">No records available</string>
+    <string name="final_reading">Final reading</string>
+    <string name="title_activity_history">HistoryActivity</string>
 </resources>

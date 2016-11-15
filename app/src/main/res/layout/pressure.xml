@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:text="220"
+        android:text="@string/zero"
         android:textAlignment="center"
         android:textSize="80sp" />
 

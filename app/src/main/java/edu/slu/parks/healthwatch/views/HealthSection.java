@@ -1,5 +1,6 @@
 package edu.slu.parks.healthwatch.views;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import edu.slu.parks.healthwatch.R;
@@ -22,5 +23,10 @@ public class HealthSection implements ISection {
     @Override
     public int getTitle() {
         return R.string.health;
+    }
+
+    @Override
+    public void load(Activity activity, int active) {
+
     }
 }

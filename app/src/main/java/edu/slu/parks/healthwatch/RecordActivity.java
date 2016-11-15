@@ -1,13 +1,13 @@
 package edu.slu.parks.healthwatch;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +18,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,8 +25,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.Date;
+import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.joda.time.DateTime;
+
+import edu.slu.parks.healthwatch.database.HealthDb;
+import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;
 import edu.slu.parks.healthwatch.model.ILocation;
 import edu.slu.parks.healthwatch.model.MyLocation;
@@ -52,6 +55,7 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
     private boolean requestingGps;
     private int diastolic;
     private int systolic;
+    private IHealthDb healthDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +64,19 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        JodaTimeAndroid.init(this);
+
         record = new Record();
         gps = new MyLocation(this);
+        healthDb = new HealthDb(this);
 
         diastolic = getIntent().getIntExtra(Constants.DIASTOLIC, 0);
         systolic = getIntent().getIntExtra(Constants.SYSTOLIC, 0);
+        latitude = getIntent().getDoubleExtra(Constants.LATITUDE, 0);
+        longitude = getIntent().getDoubleExtra(Constants.LONGITUDE, 0);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        includeLocation = sharedPref.getBoolean(getString(R.string.gps_switch), false);
-
-        //sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        latitude = Double.longBitsToDouble(sharedPref.getLong(getString(R.string.gps_latitude), 0));
-        longitude = Double.longBitsToDouble(sharedPref.getLong(getString(R.string.gps_longitude), 0));
-
+        includeLocation = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.gps_switch), false);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -83,7 +87,7 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
         commentView = (EditText) findViewById(R.id.txt_comment);
         TextView systolicView = (TextView) findViewById(R.id.layout_reading_systolic).findViewById(R.id.txt_record_pressure);
         TextView diastolicView = (TextView) findViewById(R.id.layout_reading_diastolic).findViewById(R.id.txt_record_pressure);
-        ((TextView) findViewById(R.id.layout_reading_diastolic).findViewById(R.id.txt_reading)).setText("Diastolic (mmHg)");
+        ((TextView) findViewById(R.id.layout_reading_systolic).findViewById(R.id.txt_reading)).setText(R.string.systolic_text);
 
         systolicView.setText(String.valueOf(systolic));
         diastolicView.setText(String.valueOf(diastolic));
@@ -151,7 +155,9 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
         record.systolic = systolic;
         record.diastolic = diastolic;
         record.comment = String.valueOf(commentView.getText());
-        record.date = new Date();
+        record.date = DateTime.now();
+
+        Log.d(getLocalClassName(), record.date.toString());
 
         if (includeLocation) {
             Log.d(this.getLocalClassName(), "Latitude: " + String.valueOf(latitude));
@@ -161,24 +167,33 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
                 saveToDatabase = true;
 
                 if (requestingGps) {
-                    Toast.makeText(this, "Please wait, obtaining your gps location", Toast.LENGTH_LONG).show();
+                    Snackbar.make(locationView, "Please wait, obtaining your gps location", Snackbar.LENGTH_SHORT).show();
+                    return;
 
                 } else {
                     updateLocation();
+                    return;
                 }
             } else {
                 record.latitude = latitude;
                 record.longitude = longitude;
-
-                goHome();
             }
-        } else
-            goHome();
-    }
+        }
 
-    private void goHome() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                healthDb.addRecord(record);
+
+                locationView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(RecordActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+        }).start();
     }
 
     private void repeat() {
@@ -224,6 +239,8 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
     @Override
     public void onLocationChanged(Location location) {
         Log.d(this.getLocalClassName(), "onLocation changed");
+        Snackbar.make(locationView, "Gps location obtained", Snackbar.LENGTH_SHORT).show();
+
         requestingGps = false;
 
         gps.update(location);
@@ -244,7 +261,7 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
 
     private void updateLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED || !includeLocation) {
 
 
             return;
@@ -253,7 +270,7 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
         if (latitude == 0 || longitude == 0) {
 
             requestingGps = true;
-            Toast.makeText(this, "Obtaining gps location", Toast.LENGTH_LONG).show();
+            Snackbar.make(locationView, "Obtaining gps location", Snackbar.LENGTH_SHORT).show();
 
             if (mGoogleApiClient.isConnected()) {
 

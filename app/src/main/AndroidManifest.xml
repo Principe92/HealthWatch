@@ -14,20 +14,16 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".HomeActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.slu.parks.healthwatch.HomeActivity" />
-        </activity>
+            android:parentActivityName=".HomeActivity" />
+
         <activity
             android:name=".WaitingActivity"
             android:label="@string/title_activity_waiting"
-            android:launchMode="singleInstance"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -37,7 +33,7 @@
         <activity
             android:name=".RecordActivity"
             android:label="@string/title_activity_record"
-            android:launchMode="singleInstance"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -46,8 +42,8 @@
         </activity>
         <activity
             android:name=".SplashActivity"
-            android:launchMode="singleInstance"
-            android:theme="@style/SplashTheme">
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -58,6 +54,11 @@
         <service
             android:name=".FetchAddressIntentService"
             android:exported="false" />
+
+        <activity
+            android:name=".HistoryActivity"
+            android:label="@string/title_activity_history"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

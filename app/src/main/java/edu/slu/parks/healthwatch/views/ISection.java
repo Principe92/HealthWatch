@@ -1,5 +1,6 @@
 package edu.slu.parks.healthwatch.views;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 /**
@@ -12,4 +13,6 @@ public interface ISection {
     boolean isSection(int id);
 
     int getTitle();
+
+    void load(Activity activity, int active);
 }

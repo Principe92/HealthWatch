@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.view.MenuItem;
 
 import edu.slu.parks.healthwatch.R;
@@ -28,7 +29,7 @@ public class NotificationPreferenceFragment extends BaseSettingsFragment {
         // to their values. When their values change, their summaries are
         // updated to reflect the new value, per the Android Design
         // guidelines.
-        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+        //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
     }
 
     @Override
@@ -39,5 +40,10 @@ public class NotificationPreferenceFragment extends BaseSettingsFragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected boolean respondToPreferenceChange(Preference preference, Object value) {
+        return false;
     }
 }

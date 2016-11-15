@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="edu.slu.parks.healthwatch.HomeActivity">
+    tools:context="edu.slu.parks.healthwatch.HistoryActivity">
 
-    <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay"
-        app:expanded="false"
-        app:layout_behavior="com.example.compactcalendarviewtoolbar.ScrollingCalendarBehavior">
+        app:expanded="false">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             android:minHeight="?attr/actionBarSize"
             app:contentScrim="?attr/colorPrimary"
@@ -98,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@id/date_picker_text_view"
                         android:layout_toRightOf="@id/date_picker_text_view"
-                        app:srcCompat="@mipmap/ic_arrow_drop_down_black_24dp" />
+                        app:srcCompat="@mipmap/ic_arrow_drop_down_white_24dp" />
 
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
@@ -106,5 +103,6 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/content_history" />
 
 </android.support.design.widget.CoordinatorLayout>

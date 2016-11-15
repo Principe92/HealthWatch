@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.view.MenuItem;
 
 import edu.slu.parks.healthwatch.R;
@@ -23,12 +24,6 @@ public class DataSyncPreferenceFragment extends BaseSettingsFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_data_sync);
         setHasOptionsMenu(true);
-
-        // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-        // to their values. When their values change, their summaries are
-        // updated to reflect the new value, per the Android Design
-        // guidelines.
-        bindPreferenceSummaryToValue(findPreference("sync_frequency"));
     }
 
     @Override
@@ -42,4 +37,8 @@ public class DataSyncPreferenceFragment extends BaseSettingsFragment {
     }
 
 
+    @Override
+    protected boolean respondToPreferenceChange(Preference preference, Object value) {
+        return false;
+    }
 }

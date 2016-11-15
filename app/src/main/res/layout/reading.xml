@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_weight="1"
-        android:text="Systolic (mmHg)"
+        android:text="@string/diastolic_text"
         android:textAlignment="center" />
 
     <TextView
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_weight="2"
-        android:text="200"
+        android:text="@string/zero"
         android:textSize="50sp" />
 
 </LinearLayout>

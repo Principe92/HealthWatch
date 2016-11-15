@@ -60,13 +60,23 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
-                    intent.putExtra(Constants.SYSTOLIC, Math.abs(new Random().nextInt() % 220));
-                    intent.putExtra(Constants.DIASTOLIC, Math.abs(new Random().nextInt() % 220));
-                    startActivity(intent);
+                    next();
                 }
             }, 5000);
         }
+    }
+
+    private void next() {
+        Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
+        intent.putExtra(Constants.SYSTOLIC, new Random().nextInt(220));
+        intent.putExtra(Constants.DIASTOLIC, new Random().nextInt(80));
+
+        if (gps.isValid()) {
+            intent.putExtra(Constants.LATITUDE, gps.getLocation().getLatitude());
+            intent.putExtra(Constants.LONGITUDE, gps.getLocation().getLongitude());
+        }
+
+        startActivity(intent);
     }
 
     @Override
@@ -81,6 +91,7 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED || !includeLocation || !mGoogleApiClient.isConnected()) {
 
+            disconnectGps();
             return;
         }
 
@@ -110,15 +121,16 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
             gps.save();
         }
 
+        disconnectGps();
+
+        next();
+    }
+
+    private void disconnectGps() {
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-
-        Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
-        intent.putExtra(Constants.SYSTOLIC, new Random().nextInt());
-        intent.putExtra(Constants.DIASTOLIC, new Random().nextInt());
-        startActivity(intent);
     }
 
     private LocationRequest createLocationRequest() {

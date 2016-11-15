@@ -3,105 +3,156 @@ package edu.slu.parks.healthwatch;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import edu.slu.parks.healthwatch.database.HealthDb;
+import edu.slu.parks.healthwatch.database.IHealthDb;
+import edu.slu.parks.healthwatch.database.Record;
 import edu.slu.parks.healthwatch.fragments.HealthFragment;
 import edu.slu.parks.healthwatch.fragments.HelpFragment;
 import edu.slu.parks.healthwatch.fragments.HistoryFragment;
 import edu.slu.parks.healthwatch.fragments.MeasureFragment;
-import edu.slu.parks.healthwatch.fragments.SettingsFragment;
-import edu.slu.parks.healthwatch.views.HealthSection;
-import edu.slu.parks.healthwatch.views.HelpSection;
-import edu.slu.parks.healthwatch.views.HistorySection;
+import edu.slu.parks.healthwatch.model.IAddressReceiver;
+import edu.slu.parks.healthwatch.model.IDate;
+import edu.slu.parks.healthwatch.model.JodaDate;
+import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.views.ISection;
-import edu.slu.parks.healthwatch.views.MeasureSection;
-import edu.slu.parks.healthwatch.views.SettingsSection;
 
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
+public class HomeActivity extends BaseActivity
+        implements
         MeasureFragment.OnFragmentInteractionListener,
         HelpFragment.OnFragmentInteractionListener,
         HealthFragment.OnFragmentInteractionListener,
-        HistoryFragment.OnFragmentInteractionListener {
+        HistoryFragment.OnFragmentInteractionListener,
+        IAddressReceiver {
 
-    private static final String ACTIVE_SECTION = "active_section";
-    private static final String LOCATION_KEY = "location_key";
-    private static final String REQUESTING_LOCATION_UPDATES_KEY = "allow";
-    private int activeSection;
-    private List<ISection> sections;
+    private NavigationView navigationView;
+    private Record record;
+    private AddressResultReceiver addressResultReceiver;
+    private IHealthDb database;
+    private IDate date;
+    private TextView locationView;
+    private TextView diastolicView;
+    private TextView systolicView;
+    private TextView dateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
-        sections = new ArrayList<>();
-        sections.add(new HealthSection());
-        sections.add(new HelpSection());
-        sections.add(new HistorySection());
-        sections.add(new MeasureSection());
-        sections.add(new HealthSection());
-        sections.add(new SettingsSection());
-
-        if (restoreValues(savedInstanceState)) return;
+        addressResultReceiver = new AddressResultReceiver(new Handler());
+        database = new HealthDb(this);
+        date = new JodaDate(this);
 
         initViews();
     }
 
     private void initViews() {
-        ISection current = getSection(R.id.nav_measure);
+       /* ISection current = getSection(R.id.nav_measure);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.content_home, current.getFragment()).commit();
+        transaction.add(R.id.content_home, current.getFragment()).commit();*/
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(current.getTitle());
+        toolbar.setTitle(R.string.measure);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_measure);
+
+        Button button = (Button) findViewById(R.id.btn_measure);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(HomeActivity.this, WaitingActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button historyBtn = (Button) findViewById(R.id.btn_history);
+        historyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onHistoryButtonClick();
+            }
+        });
+
+        diastolicView = (TextView) (findViewById(R.id.layout_diastolic)).findViewById(R.id.txt_pressure);
+        systolicView = (TextView) (findViewById(R.id.layout_systolic)).findViewById(R.id.txt_pressure);
+        locationView = (TextView) findViewById(R.id.txt_location);
+        dateView = (TextView) findViewById(R.id.txt_date);
+
+        ((TextView) findViewById(R.id.layout_systolic).findViewById(R.id.txt_pressure_metric)).setText(R.string.systolic_text);
     }
 
-    private boolean restoreValues(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
+    private void getLatestReading() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                record = database.getLatestReading();
 
-            activeSection = savedInstanceState.getInt(ACTIVE_SECTION, R.id.nav_measure);
-            ISection current = getSection(activeSection);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            if (current != null && toolbar != null)
-                toolbar.setTitle(current.getTitle());
+                HomeActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (record != null) {
+                            systolicView.setText(String.valueOf(record.systolic));
+                            diastolicView.setText(String.valueOf(record.diastolic));
+                            dateView.setText(date.toString(Constants.DATE_FORMAT, record.date));
 
-            return true;
-        }
+                            locationView.setText(R.string.loading_location);
+                            getAddressFromLocation(record.latitude, record.longitude);
+                        } else {
+                            Toast.makeText(HomeActivity.this, R.string.no_records_available, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
 
-        return false;
+    private void getAddressFromLocation(double latitude, double longitude) {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, addressResultReceiver);
+        intent.putExtra(Constants.LATITUDE, latitude);
+        intent.putExtra(Constants.LONGITUDE, longitude);
+        this.startService(intent);
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+    public void onPause() {
+        super.onPause();
+
+        if (addressResultReceiver != null)
+            addressResultReceiver.setReceiver(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        navigationView.setCheckedItem(activeSection);
+
+        if (addressResultReceiver != null) {
+            addressResultReceiver.setReceiver(this);
         }
+
+        getLatestReading();
     }
 
     @Override
@@ -112,49 +163,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putInt(ACTIVE_SECTION, activeSection);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-
-        ISection section = getSection(id);
-
-        if (section != null && !section.isSection(activeSection)) {
-            activeSection = id;
-
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-            transaction.replace(R.id.content_home, section.getFragment(), getString(section.getTitle()));
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(item.getTitle());
-
-        return true;
-    }
-
-    private ISection getSection(int id) {
-        int size = sections.size();
-
-        for (int i = 0; i < size; i++) {
-            if (sections.get(i).isSection(id)) return sections.get(i);
-        }
-
-        return null;
+    public int getLayoutId() {
+        return R.layout.activity_home;
     }
 
     @Override
@@ -162,40 +172,23 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    private void setActionbarTitle(int id) {
-        ISection current = getSection(id);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null && current != null)
-            toolbar.setTitle(current.getTitle());
-    }
-
-    @Override
-    public void onMeasureButtonClick() {
-        Intent intent = new Intent(this, WaitingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
     @Override
     public void onHistoryButtonClick() {
         ISection section = getSection(R.id.nav_history);
 
-        if (section != null) {
-            activeSection = R.id.nav_history;
-            setActionbarTitle(activeSection);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-            transaction.replace(R.id.content_home, section.getFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
+        if (section != null)
+            section.load(this, R.id.nav_history);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onAddressReceived(int resultCode, Bundle resultData) {
+        String mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
 
-        SettingsFragment m = (SettingsFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.settings));
-        if (m != null) m.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (resultCode == Constants.SUCCESS_RESULT) {
+            locationView.setText(mAddressOutput);
+            locationView.setVisibility(View.VISIBLE);
+        } else {
+            locationView.setText(R.string.unknown_location);
+        }
     }
 }

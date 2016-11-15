@@ -29,4 +29,10 @@ public class Constants {
     public static final String LONGITUDE = "longitude";
     public static final String SYSTOLIC = "systolic";
     public static final String DIASTOLIC = "diastolic";
+    public static final String DATE_FORMAT = "MMMM dd, YYYY @ h:mm a";
+    public static final String ACTIVE_SECTION = "action_section";
+    public static final String HISTORY_DATE_FORMAT = "d MMMM yyyy";
+    public static final String NORMAL_DATE_FORMAT = "d MMMM";
+    public static final String GRAPH_TYPE = "graph type";
+    public static final String DB_DATE_FORMAT = "YYYY-MM-ddTHH:mm:SS.SSS";
 }
