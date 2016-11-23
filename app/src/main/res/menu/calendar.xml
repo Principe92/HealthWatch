@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/cal_day"
+            android:icon="@mipmap/ic_track_changes_black_24dp"
+            android:title="@string/day" />
+        <item
+            android:id="@+id/cal_week"
+            android:icon="@mipmap/ic_book_black_24dp"
+            android:title="@string/week" />
+        <item
+            android:id="@+id/cal_month"
+            android:icon="@mipmap/ic_favorite_black_24dp"
+            android:title="@string/month" />
+        <item
+            android:id="@+id/cal_year"
+            android:icon="@mipmap/ic_info_black_24dp"
+            android:title="@string/year" />
+    </group>
+
+</menu>

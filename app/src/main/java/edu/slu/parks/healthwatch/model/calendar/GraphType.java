@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.model;
+package edu.slu.parks.healthwatch.model.calendar;
 
 /**
  * Created by okori on 14-Nov-16.
@@ -6,7 +6,8 @@ package edu.slu.parks.healthwatch.model;
 
 public enum GraphType {
     LiNE(0),
-    BAR(1);
+    BAR(1),
+    TABLE(2);
 
     int value;
 

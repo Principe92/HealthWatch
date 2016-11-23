@@ -9,16 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.slu.parks.healthwatch.utils.Constants;
-import edu.slu.parks.healthwatch.views.HealthSection;
-import edu.slu.parks.healthwatch.views.HelpSection;
-import edu.slu.parks.healthwatch.views.HistorySection;
+import edu.slu.parks.healthwatch.utils.Util;
 import edu.slu.parks.healthwatch.views.ISection;
-import edu.slu.parks.healthwatch.views.MeasureSection;
-import edu.slu.parks.healthwatch.views.SettingsSection;
 
 /**
  * Created by okorie on 14-Nov-16.
@@ -36,13 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         activeSection = getIntent().getIntExtra(Constants.ACTIVE_SECTION, R.id.nav_measure);
 
-        sections = new ArrayList<>();
-        sections.add(new HealthSection());
-        sections.add(new HelpSection());
-        sections.add(new HistorySection());
-        sections.add(new MeasureSection());
-        sections.add(new HealthSection());
-        sections.add(new SettingsSection());
+        sections = Util.buildNavigationSections();
 
         restoreValues(savedInstanceState);
     }

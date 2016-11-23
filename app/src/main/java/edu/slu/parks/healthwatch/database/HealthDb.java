@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import org.joda.time.DateTime;
 
@@ -54,15 +53,10 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
     public long addRecord(Record record) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(Table.SYSTOLIC, record.systolic);
-        values.put(Table.DIASTOLIC, record.diastolic);
-        values.put(Table.COMMENT, record.comment);
-        values.put(Table.DATE, record.date.toString());
-        values.put(Table.LATITUDE, record.latitude);
-        values.put(Table.LONGITUDE, record.longitude);
+
 
         // Inserting Row
+        ContentValues values = mapper.toDbRow(record);
         long id = db.insert(Table.NAME, null, values);
         db.close(); // Closing database connection
 
@@ -76,7 +70,6 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
         String query = "SELECT * FROM " + Table.NAME
                 + " WHERE strftime('%Y-%m-%d', date) = strftime('%Y-%m-%d', '" + date.toString() + "')";
 
-        Log.d(this.getClass().getName(), query);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 

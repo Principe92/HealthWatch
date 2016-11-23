@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import edu.slu.parks.healthwatch.fragments.GraphFragment;
+import edu.slu.parks.healthwatch.fragments.TableFragment;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 /**
@@ -19,7 +21,7 @@ public class GraphPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment = new GraphFragment();
+        Fragment fragment = position == 2 ? new TableFragment() : new GraphFragment();
         Bundle arg = new Bundle();
         arg.putInt(Constants.GRAPH_TYPE, position);
         fragment.setArguments(arg);
@@ -28,6 +30,6 @@ public class GraphPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 }

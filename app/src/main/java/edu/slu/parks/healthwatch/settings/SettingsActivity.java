@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -48,5 +49,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+
+        GeneralPreferenceFragment fragment = (GeneralPreferenceFragment) getFragmentManager().findFragmentById(R.id.pref_general);
+        if (fragment != null)
+            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

@@ -35,4 +35,13 @@ public class Constants {
     public static final String NORMAL_DATE_FORMAT = "d MMMM";
     public static final String GRAPH_TYPE = "graph type";
     public static final String DB_DATE_FORMAT = "YYYY-MM-ddTHH:mm:SS.SSS";
+    public static final String SELECTED_DATE = "selected_date";
+    public static final String SELECTED_VIEW = "selected_view";
+    public static final int REQUEST_ENABLE_BT = 300;
+    public static final String DEVICE_NAME = "HealthWatch";
+    public static final int REQUEST_BT_CANCEL_DISCOVERY = 301;
+    public static final String BT_ADDRESS = "mac_address";
+    public static final String BT_NAME = "bt_name";
+    public static final int MESSAGE_READ = 1;
+    public static final String UUID = "fa87c0d0-afac-11de-8a39-0800200c9a66";
 }

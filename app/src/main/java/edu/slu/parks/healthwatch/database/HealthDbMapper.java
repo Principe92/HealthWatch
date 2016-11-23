@@ -1,5 +1,6 @@
 package edu.slu.parks.healthwatch.database;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import org.joda.time.DateTime;
@@ -22,5 +23,17 @@ public class HealthDbMapper implements IHealthDbMapper {
         r.latitude = cursor.getDouble(cursor.getColumnIndex(Table.LATITUDE));
 
         return r;
+    }
+
+    @Override
+    public ContentValues toDbRow(Record record) {
+        ContentValues values = new ContentValues();
+        values.put(Table.SYSTOLIC, record.systolic);
+        values.put(Table.DIASTOLIC, record.diastolic);
+        values.put(Table.COMMENT, record.comment);
+        values.put(Table.DATE, record.date.toString());
+        values.put(Table.LATITUDE, record.latitude);
+        values.put(Table.LONGITUDE, record.longitude);
+        return values;
     }
 }

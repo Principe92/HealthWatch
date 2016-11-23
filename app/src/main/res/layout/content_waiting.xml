@@ -18,7 +18,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/txt_pressure"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp" />
 
@@ -26,23 +26,23 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView2"
+        android:layout_alignBaseline="@+id/txt_pressure"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_toRightOf="@+id/textView2"
-        android:text="mmHg"
+        android:layout_toEndOf="@+id/txt_pressure"
+        android:layout_toRightOf="@+id/txt_pressure"
+        android:text="@string/mmhg"
         android:textAlignment="center"
-        android:textSize="17dp" />
+        android:textSize="17sp" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="39dp"
-        android:text="Constricting arm"
+        android:text=""
         android:textSize="17sp" />
 
     <TextView
@@ -56,13 +56,13 @@
         android:textSize="17sp" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/txt_pressure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_alignStart="@+id/textView3"
+        android:layout_alignLeft="@+id/textView5"
+        android:layout_alignStart="@+id/textView5"
         android:layout_below="@+id/textView5"
-        android:layout_marginTop="38dp"
+        android:layout_marginTop="39dp"
         android:text="220"
         android:textAlignment="center"
         android:textSize="70dp" />

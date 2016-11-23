@@ -57,10 +57,6 @@ public class HomeActivity extends BaseActivity
     }
 
     private void initViews() {
-       /* ISection current = getSection(R.id.nav_measure);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.content_home, current.getFragment()).commit();*/
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.measure);
         setSupportActionBar(toolbar);

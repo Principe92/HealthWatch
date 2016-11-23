@@ -9,11 +9,11 @@ public class Sql {
             "CREATE TABLE " + Table.NAME
                     + " ("
                     + Table.ID + " INTEGER PRIMARY KEY, "
-                    + Table.SYSTOLIC + " REAL, "
-                    + Table.DIASTOLIC + " REAL, "
+                    + Table.SYSTOLIC + " INTEGER, "
+                    + Table.DIASTOLIC + " INTEGER, "
                     + Table.COMMENT + " TEXT, "
-                    + Table.LATITUDE + " INTEGER, "
-                    + Table.LONGITUDE + " INTEGER, "
+                    + Table.LATITUDE + " REAL, "
+                    + Table.LONGITUDE + " REAL, "
                     + Table.DATE + " TEXT"
                     + ");";
 

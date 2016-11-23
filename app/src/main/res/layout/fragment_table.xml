@@ -1,0 +1,12 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/table"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    tools:context="edu.slu.parks.healthwatch.fragments.TableFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <include layout="@layout/table_header" />
+
+</TableLayout>
