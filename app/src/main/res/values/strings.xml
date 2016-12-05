@@ -127,4 +127,7 @@
     <string name="deflating">Deflating cuff</string>
     <string name="inflating">Inflating cuff</string>
     <string name="mmhg">mmHg</string>
+    <string name="verify_bluetooth">Verifying Bluetooth is on</string>
+    <string name="connecting">Connecting to Health Watch</string>
+    <string name="search">Searching for Health Watch</string>
 </resources>

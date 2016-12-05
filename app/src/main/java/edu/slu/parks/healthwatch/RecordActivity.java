@@ -188,16 +188,21 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
                 locationView.post(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(RecordActivity.this, HomeActivity.class);
-                        startActivity(intent);
+                        goHome();
                     }
                 });
             }
         }).start();
     }
 
+    private void goHome() {
+        Intent intent = new Intent(RecordActivity.this, HomeActivity.class);
+        startActivity(intent);
+    }
+
     private void repeat() {
         Intent intent = new Intent(this, WaitingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
@@ -216,7 +221,7 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
 
     @Override
     public void onOkayButtonClick() {
-        super.onBackPressed();
+        goHome();
     }
 
     @Override

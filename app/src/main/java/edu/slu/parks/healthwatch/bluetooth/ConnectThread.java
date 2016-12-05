@@ -27,6 +27,8 @@ public class ConnectThread extends Thread {
         // because mmSocket is final
         BluetoothSocket tmp = null;
         mmDevice = device;
+        Log.d(getClass().getName(), "Called");
+
 
         // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
@@ -43,7 +45,7 @@ public class ConnectThread extends Thread {
         try {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
-            Log.d(getName(), "run");
+            Log.d(this.getClass().getName(), "run");
             mmSocket.connect();
         } catch (IOException connectException) {
             // Unable to connect; close the socket and get out
@@ -57,7 +59,7 @@ public class ConnectThread extends Thread {
         // Do work to manage the connection (in a separate thread)
 
         connectedThread = new ConnectedThread(mmSocket, handler);
-        connectedThread.run();
+        connectedThread.start();
     }
 
     /**
@@ -67,7 +69,7 @@ public class ConnectThread extends Thread {
     public void cancel() {
         try {
             mmSocket.close();
-            connectedThread.cancel();
+            if (connectedThread != null) connectedThread.cancel();
         } catch (IOException e) {
         }
     }

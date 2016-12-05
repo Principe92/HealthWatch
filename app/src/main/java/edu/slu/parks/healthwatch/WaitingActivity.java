@@ -29,7 +29,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.Random;
 import java.util.Set;
 
 import edu.slu.parks.healthwatch.bluetooth.ConnectThread;
@@ -52,7 +51,11 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
     private TextView statusView;
     private BluetoothDevice healthWatch;
     private android.os.Handler bluetoothHandler;
-
+    private ConnectThread connectThread;
+    private boolean aquiringSystolic;
+    private boolean aquiringDiastolic;
+    private int diastolic;
+    private int systolic;
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -67,9 +70,10 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
                         String.format("%s found", device.getAddress()),
                         Snackbar.LENGTH_SHORT).show();
 
-                if (device.getAddress().toLowerCase().contains("c8:ff:28:34".toLowerCase())) {
+                String name = device.getName() != null ? device.getName() : "";
+                if (name.toLowerCase().contains(Constants.DEVICE_NAME.toLowerCase())) {
                     Snackbar.make(findViewById(R.id.status),
-                            String.format("%s found as valid", device.getAddress()),
+                            String.format("%s found as valid", name),
                             Snackbar.LENGTH_SHORT).show();
 
                     healthWatch = device;
@@ -143,13 +147,13 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         super.onDestroy();
 
         mBluetoothAdapter.cancelDiscovery();
-
         unregisterReceiver(mReceiver);
     }
 
     public void handleBluetooth() {
-        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
+        updateStatus(R.string.verify_bluetooth);
 
+        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
             Snackbar.make(findViewById(R.id.status), "Bluetooth is off", Snackbar.LENGTH_INDEFINITE)
                     .setAction("TURN ON", new View.OnClickListener() {
                         @Override
@@ -168,57 +172,81 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         }
     }
 
-    private void connectToDevice() {
+    private void updateStatus(int message) {
+        statusView.setText(message);
+    }
 
+    private void connectToDevice() {
         BluetoothDevice device = getPairedDevice();
 
         if (device != null) {
+            updateStatus(R.string.connecting);
             healthWatch = device;
             startConnection(device);
 
         } else {
+            updateStatus(R.string.search);
             performDeviceDiscovery();
         }
     }
 
     private void startConnection(BluetoothDevice device) {
-        statusView.setText(String.format("Connecting to %s", device.getAddress()));
+        updateStatus(String.format("Connecting to %s", device.getName()));
 
         bluetoothHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message inputMessage) {
-                switch (Phase.toEnum(inputMessage.what)) {
-                    case INFLATING:
-                        statusView.setText(R.string.inflating);
-                        break;
-                    case DEFLATING:
-                        statusView.setText(R.string.deflating);
-                        break;
-                    case SYSTOLIC:
-                        statusView.setText(R.string.getting_systolic);
-                        break;
-                    case DIASTOLIC:
-                        statusView.setText(R.string.getting_diatolic);
-                        break;
+                Phase phase = Phase.toEnum(inputMessage.what);
 
-                    case DONE:
-                        next();
-                        break;
+                // Log.d(getClass().getName(), "phase: " + phase.name());
+                if (phase != Phase.UNKNOWN) {
+                    switch (phase) {
+                        case START:
+                            updateStatus("Starting measurement...");
+                            break;
+                        case INFLATING:
+                            statusView.setText(R.string.inflating);
+                            break;
+                        case DEFLATING:
+                            statusView.setText(R.string.deflating);
+                            break;
+                        case SYSTOLIC:
+                            aquiringSystolic = true;
+                            statusView.setText(R.string.getting_systolic);
+                            break;
+                        case DIASTOLIC:
+                            aquiringDiastolic = true;
+                            statusView.setText(R.string.getting_diatolic);
+                            break;
 
-                    default:
-                        next();
+                        case DONE:
+                            next();
+                            break;
+                    }
+                } else {
+                    if (aquiringDiastolic) {
+                        diastolic = inputMessage.what;
+                        aquiringDiastolic = false;
+                    } else if (aquiringSystolic) {
+                        systolic = inputMessage.what;
+                        aquiringSystolic = false;
+                    } else pressureView.setText(String.valueOf(inputMessage.what));
                 }
             }
         };
 
-        ConnectThread connect = new ConnectThread(device, bluetoothHandler);
-        connect.run();
+        if (connectThread != null) connectThread.cancel();
+        connectThread = new ConnectThread(device, bluetoothHandler);
+        connectThread.start();
+    }
+
+    private void updateStatus(String message) {
+        if (statusView != null)
+            statusView.setText(message);
     }
 
     private void performDeviceDiscovery() {
-
-        if (mBluetoothAdapter.isDiscovering()) mBluetoothAdapter.cancelDiscovery();
-
+        mBluetoothAdapter.cancelDiscovery();
         mBluetoothAdapter.startDiscovery();
     }
 
@@ -239,8 +267,8 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
 
     private void next() {
         Intent intent = new Intent(WaitingActivity.this, RecordActivity.class);
-        intent.putExtra(Constants.SYSTOLIC, new Random().nextInt(220));
-        intent.putExtra(Constants.DIASTOLIC, new Random().nextInt(80));
+        intent.putExtra(Constants.SYSTOLIC, systolic);
+        intent.putExtra(Constants.DIASTOLIC, diastolic);
 
         if (gps.isValid()) {
             intent.putExtra(Constants.LATITUDE, gps.getLocation().getLatitude());
@@ -355,5 +383,6 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         super.onStop();
 
         mGoogleApiClient.disconnect();
+        if (connectThread != null) connectThread.cancel();
     }
 }

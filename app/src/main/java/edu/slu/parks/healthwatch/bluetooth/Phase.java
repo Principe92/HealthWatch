@@ -5,11 +5,13 @@ package edu.slu.parks.healthwatch.bluetooth;
  */
 
 public enum Phase {
-    INFLATING(0),
-    DEFLATING(1),
-    SYSTOLIC(2),
-    DIASTOLIC(3),
-    DONE(4);
+    INFLATING(300),
+    DEFLATING(400),
+    SYSTOLIC(500),
+    DIASTOLIC(600),
+    DONE(700),
+    START(800),
+    UNKNOWN(900);
 
     int value;
 
@@ -22,6 +24,6 @@ public enum Phase {
             if (type.value == value) return type;
         }
 
-        return Phase.INFLATING;
+        return Phase.UNKNOWN;
     }
 }

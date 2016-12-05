@@ -68,6 +68,7 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
         List<Record> records = new ArrayList<>();
 
         String query = "SELECT * FROM " + Table.NAME
+                //+ " WHERE date like '%" + myDate.toString("yyyy-MM-d", date) + "%'";
                 + " WHERE strftime('%Y-%m-%d', date) = strftime('%Y-%m-%d', '" + date.toString() + "')";
 
         SQLiteDatabase db = this.getReadableDatabase();

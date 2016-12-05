@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_pressure"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp" />
+        android:layout_marginTop="35dp"
+        android:indeterminate="true" />
 
     <TextView
         android:id="@+id/textView4"

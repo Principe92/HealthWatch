@@ -32,7 +32,6 @@
         <activity
             android:name=".WaitingActivity"
             android:label="@string/title_activity_waiting"
-            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

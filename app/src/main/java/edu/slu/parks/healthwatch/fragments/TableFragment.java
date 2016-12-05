@@ -1,8 +1,10 @@
 package edu.slu.parks.healthwatch.fragments;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +107,15 @@ public class TableFragment extends Fragment implements IGraph {
     }
 
     private TextView buildTextView() {
-        return new TextView(getContext());
+        TextView text = new TextView(getContext());
+        text.setGravity(Gravity.FILL);
+        text.setPadding(0, 8, 0, 8);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            text.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        }
+
+        return text;
     }
 
     private void addHeader() {

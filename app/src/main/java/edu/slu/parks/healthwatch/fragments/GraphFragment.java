@@ -2,6 +2,7 @@ package edu.slu.parks.healthwatch.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -60,6 +61,13 @@ public class GraphFragment extends Fragment implements IGraph {
         View view = inflater.inflate(R.layout.fragment_graph, container, false);
 
         graphView = (GraphView) view.findViewById(R.id.graph);
+        /*graphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getGridLabelRenderer().setHumanRounding(false);
+        graphView.getViewport().setScalable(true);
+        graphView.getViewport().setScalableY(true);
+        graphView.getViewport().setMinY(50);
+
+        graphView.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));*/
 
         return view;
     }
@@ -97,7 +105,7 @@ public class GraphFragment extends Fragment implements IGraph {
                 Log.d(this.getClass().getName(), "d: " + r.diastolic + " s: " + r.systolic + " date: " + r.date.toString());
             }
 
-            addSeriesByType(sys, dias);
+            addSeriesByType(sys, dias, records.get(0).date, records.get(size - 1).date);
         }
     }
 
@@ -120,13 +128,19 @@ public class GraphFragment extends Fragment implements IGraph {
         }
     }
 
-    private void addSeriesByType(DataPoint[] sys, DataPoint[] dias) {
+    private void addSeriesByType(DataPoint[] sys, DataPoint[] dias, DateTime min, DateTime max) {
         switch (graphType) {
             case LiNE:
                 LineGraphSeries<DataPoint> sysSeries = new LineGraphSeries<>(sys);
-                sysSeries.setColor(R.color.wallet_secondary_text_holo_dark);
+                sysSeries.setDrawDataPoints(true);
+                sysSeries.setDataPointsRadius(10);
+                sysSeries.setTitle("Systolic (mmHg)");
+                sysSeries.setColor(Color.RED);
 
                 LineGraphSeries<DataPoint> diaSeries = new LineGraphSeries<>(dias);
+                diaSeries.setDrawDataPoints(true);
+                diaSeries.setDataPointsRadius(10);
+                diaSeries.setTitle("Diastolic (mmHg)");
 
                 graphView.addSeries(sysSeries);
                 graphView.addSeries(diaSeries);
@@ -134,9 +148,17 @@ public class GraphFragment extends Fragment implements IGraph {
 
             case BAR:
                 BarGraphSeries<DataPoint> barSysSeries = new BarGraphSeries<>(sys);
-                barSysSeries.setColor(R.color.wallet_secondary_text_holo_dark);
+                barSysSeries.setColor(Color.RED);
+                //barSysSeries.setDrawValuesOnTop(true);
+                //barSysSeries.setValuesOnTopColor(Color.RED);
+                barSysSeries.setSpacing(10);
+                barSysSeries.setTitle("Systolic (mmHg)");
 
                 BarGraphSeries<DataPoint> barDiaSeries = new BarGraphSeries<>(dias);
+                //barDiaSeries.setDrawValuesOnTop(true);
+                //barDiaSeries.setValuesOnTopColor(Color.BLUE);
+                barDiaSeries.setSpacing(10);
+                barDiaSeries.setTitle("Diastolic (mmHg)");
 
                 graphView.addSeries(barSysSeries);
                 graphView.addSeries(barDiaSeries);
@@ -145,5 +167,10 @@ public class GraphFragment extends Fragment implements IGraph {
             default:
                 break;
         }
+
+        // set date label formatter
+       /* graphView.getGridLabelRenderer().setNumHorizontalLabels(dias.length); // only 4 because of the space
+        graphView.getViewport().setMinX(min.getMillis());
+        graphView.getViewport().setMaxX(max.getMillis());*/
     }
 }
