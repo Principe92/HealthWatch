@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +36,7 @@ import edu.slu.parks.healthwatch.model.MyLocation;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 
-public class RecordActivity extends AppCompatActivity implements AlertDialogFragment.Listener,
+public class RecordActivity extends BaseActivity implements AlertDialogFragment.Listener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -60,7 +59,6 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -122,6 +120,11 @@ public class RecordActivity extends AppCompatActivity implements AlertDialogFrag
         });
 
         locationView.setChecked(includeLocation);
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_record;
     }
 
     private void tryRequestPermissionAndUpdate() {

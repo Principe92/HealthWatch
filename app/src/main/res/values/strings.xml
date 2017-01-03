@@ -130,4 +130,23 @@
     <string name="verify_bluetooth">Verifying Bluetooth is on</string>
     <string name="connecting">Connecting to Health Watch</string>
     <string name="search">Searching for Health Watch</string>
+    <string name="title_activity_health">HealthActivity</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="pinLength">4</string>
+    <string name="key_email">key_email</string>
+    <string name="key_timeout">key_timeout</string>
+    <string name="sparkPostApiKey">589a70bb08ce38a68d6d1bc75bde72ae873029e4</string>
 </resources>

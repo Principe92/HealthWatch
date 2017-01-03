@@ -23,11 +23,13 @@ import edu.slu.parks.healthwatch.fragments.MeasureFragment;
 import edu.slu.parks.healthwatch.model.IAddressReceiver;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
+import edu.slu.parks.healthwatch.utils.AddressResultReceiver;
 import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.utils.FetchAddressIntentService;
 import edu.slu.parks.healthwatch.views.ISection;
 
 
-public class HomeActivity extends BaseActivity
+public class HomeActivity extends NavigationActivity
         implements
         MeasureFragment.OnFragmentInteractionListener,
         HelpFragment.OnFragmentInteractionListener,
@@ -48,7 +50,6 @@ public class HomeActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         addressResultReceiver = new AddressResultReceiver(new Handler());
         database = new HealthDb(this);
         date = new JodaDate(this);

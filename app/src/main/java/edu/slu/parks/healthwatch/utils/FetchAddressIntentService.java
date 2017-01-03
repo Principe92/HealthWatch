@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.utils;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.R;
 
 /**
  * Created by okori on 11/3/2016.

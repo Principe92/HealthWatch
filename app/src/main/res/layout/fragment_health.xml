@@ -1,13 +1,26 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="edu.slu.parks.healthwatch.fragments.HealthFragment">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg" />
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/health" />
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut justo vel sapien porta sodales eu ac nisl. Etiam sit amet ante metus. Praesent varius sapien vitae metus elementum, non blandit quam condimentum. Nulla neque ex, pharetra ac ligula fermentum, convallis ultrices tortor. Cras bibendum, metus eget porttitor blandit, lorem mauris aliquam enim, vitae eleifend ex lacus sit amet ligula. Sed metus tellus, blandit eu leo a, euismod convallis ante. In consectetur egestas fermentum." />
 
-</FrameLayout>
+</LinearLayout>

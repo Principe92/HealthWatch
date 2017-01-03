@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +37,7 @@ import edu.slu.parks.healthwatch.model.MyLocation;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 
-public class WaitingActivity extends AppCompatActivity implements AlertDialogFragment.Listener,
+public class WaitingActivity extends BaseActivity implements AlertDialogFragment.Listener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -87,7 +86,6 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_waiting);
 
         if (savedInstanceState != null) {
             healthWatch = savedInstanceState.getParcelable(Constants.BT_ADDRESS);
@@ -115,6 +113,11 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
         Log.d(getLocalClassName(), "includeLocation: " + includeLocation);
 
         handleBluetooth();
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_waiting;
     }
 
     @Override
@@ -202,21 +205,21 @@ public class WaitingActivity extends AppCompatActivity implements AlertDialogFra
                 if (phase != Phase.UNKNOWN) {
                     switch (phase) {
                         case START:
-                            updateStatus("Starting measurement...");
+                            updateStatus("Starting measurement");
                             break;
                         case INFLATING:
-                            statusView.setText(R.string.inflating);
+                            updateStatus(R.string.inflating);
                             break;
                         case DEFLATING:
-                            statusView.setText(R.string.deflating);
+                            updateStatus(R.string.deflating);
                             break;
                         case SYSTOLIC:
                             aquiringSystolic = true;
-                            statusView.setText(R.string.getting_systolic);
+                            updateStatus(R.string.getting_systolic);
                             break;
                         case DIASTOLIC:
                             aquiringDiastolic = true;
-                            statusView.setText(R.string.getting_diatolic);
+                            updateStatus(R.string.getting_diatolic);
                             break;
 
                         case DONE:

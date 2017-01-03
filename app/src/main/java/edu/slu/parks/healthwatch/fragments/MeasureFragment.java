@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import edu.slu.parks.healthwatch.AddressResultReceiver;
-import edu.slu.parks.healthwatch.FetchAddressIntentService;
 import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.WaitingActivity;
 import edu.slu.parks.healthwatch.database.HealthDb;
@@ -22,7 +20,9 @@ import edu.slu.parks.healthwatch.database.Record;
 import edu.slu.parks.healthwatch.model.IAddressReceiver;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
+import edu.slu.parks.healthwatch.utils.AddressResultReceiver;
 import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.utils.FetchAddressIntentService;
 
 
 public class MeasureFragment extends Fragment implements IAddressReceiver {

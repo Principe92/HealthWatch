@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -35,9 +34,10 @@ import edu.slu.parks.healthwatch.model.calendar.GraphTask;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
 import edu.slu.parks.healthwatch.model.calendar.IGraph;
 import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.utils.GraphPagerAdapter;
 import edu.slu.parks.healthwatch.utils.Util;
 
-public class HistoryActivity extends BaseActivity
+public class HistoryActivity extends NavigationActivity
         implements CompactCalendarView.CompactCalendarViewListener,
         GraphListener, PopupMenu.OnMenuItemClickListener, GraphTask.TaskListener {
 
@@ -73,10 +73,9 @@ public class HistoryActivity extends BaseActivity
         date = new JodaDate(this);
         healthDb = new HealthDb(this);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ((DrawerLayout) findViewById(R.id.drawer_layout)).addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -95,9 +94,7 @@ public class HistoryActivity extends BaseActivity
 
         final ImageView arrow = (ImageView) findViewById(R.id.date_picker_arrow);
 
-        RelativeLayout datePickerButton = (RelativeLayout) findViewById(R.id.date_picker_button);
-
-        datePickerButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.date_picker_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isExpanded) {
@@ -238,10 +235,10 @@ public class HistoryActivity extends BaseActivity
         }
     }
 
-    private GraphTask getBitmapDownloaderTask(DateTime imageView) {
+    private GraphTask getGraphTask(DateTime date) {
         if (currentTask != null) {
 
-            if (currentTask.getDate().equals(imageView)) {
+            if (currentTask.getDate().equals(date)) {
                 return currentTask;
             } else {
                 currentTask.cancel(true);
@@ -251,9 +248,9 @@ public class HistoryActivity extends BaseActivity
     }
 
     private boolean cancelPotentialDownload(DateTime dateTime) {
-        GraphTask bitmapDownloaderTask = getBitmapDownloaderTask(dateTime);
+        GraphTask graphTask = getGraphTask(dateTime);
 
-        return bitmapDownloaderTask == null;
+        return graphTask == null;
     }
 
     @Override

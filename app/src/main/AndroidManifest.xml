@@ -8,10 +8,18 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH"
         android:required="true" />
-
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:required="true" />
+
+    <uses-permission
+        android:name="android.permission.USE_FINGERPRINT"
+        android:required="false" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -27,8 +35,11 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".HomeActivity" />
-
+            android:parentActivityName=".HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+        </activity>
         <activity
             android:name=".WaitingActivity"
             android:label="@string/title_activity_waiting"
@@ -60,13 +71,26 @@
         </activity>
 
         <service
-            android:name=".FetchAddressIntentService"
+            android:name=".utils.FetchAddressIntentService"
             android:exported="false" />
 
         <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_history"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HealthActivity"
+            android:label="@string/title_activity_health"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:noHistory="true" />
     </application>
 
 </manifest>

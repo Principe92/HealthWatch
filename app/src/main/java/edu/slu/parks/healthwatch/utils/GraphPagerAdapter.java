@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import edu.slu.parks.healthwatch.fragments.GraphFragment;
 import edu.slu.parks.healthwatch.fragments.TableFragment;
-import edu.slu.parks.healthwatch.utils.Constants;
 
 /**
  * Created by okori on 14-Nov-16.

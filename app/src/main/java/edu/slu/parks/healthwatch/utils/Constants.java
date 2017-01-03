@@ -44,4 +44,13 @@ public class Constants {
     public static final String BT_NAME = "bt_name";
     public static final int MESSAGE_READ = 1;
     public static final String UUID = "7A51FDC2-FDDF-4c9b-AFFC-98BCD91BF93B";
+    public static final String HAS_LOGIN = "has_login";
+    public static final int REQUEST_FINGERPRINT = 400;
+    public static final java.lang.String RSA = "RSA";
+    public static final String KEYSTORE = "AndroidKeyStore";
+    public static final String ALIAS = "keyHealthWatch";
+    public static final java.lang.String SIGNATURE = "SHA256withRSA";
+    public static final String PIN = "UserPin";
+    public static final String PAUSED = "paused";
+    public static final String GOHOME = "next";
 }

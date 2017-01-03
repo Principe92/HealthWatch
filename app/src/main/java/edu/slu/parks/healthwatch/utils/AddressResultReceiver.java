@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.utils;
 
 import android.os.Bundle;
 import android.os.Handler;
