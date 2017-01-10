@@ -18,27 +18,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andrognito.pinlockview.IndicatorDots;
 import com.andrognito.pinlockview.PinLockListener;
 import com.andrognito.pinlockview.PinLockView;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.model.EmailMessage;
-import edu.slu.parks.healthwatch.model.IMail;
-import edu.slu.parks.healthwatch.model.Mail;
-import edu.slu.parks.healthwatch.security.IPreference;
-import edu.slu.parks.healthwatch.security.Preference;
+import edu.slu.parks.healthwatch.model.IPinManager;
+import edu.slu.parks.healthwatch.model.PinManager;
 import edu.slu.parks.healthwatch.utils.Constants;
 
-public class SignInFragment extends Fragment implements PinLockListener {
+public class SignInFragment extends Fragment implements PinLockListener, PinManager.PinManagerListener {
 
     private PinLockView mPinLockView;
-    private TextView statusView;
+    private TextView mStatusView;
     private FingerprintManager mFingerprintManager;
     private SignInListener mListener;
-    private IMail mailSender;
-    private IPreference preference;
+    private IPinManager pinManager;
+    private boolean resetPin;
+    private boolean firstIntent;
+    private String lastPin;
 
     public SignInFragment() {
         // Required empty public constructor
@@ -52,8 +52,7 @@ public class SignInFragment extends Fragment implements PinLockListener {
             mFingerprintManager = getActivity().getSystemService(FingerprintManager.class);
         }
 
-        mailSender = new Mail(getActivity());
-        preference = new Preference(getActivity());
+        pinManager = new PinManager(getContext(), this);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class SignInFragment extends Fragment implements PinLockListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
-        statusView = (TextView) view.findViewById(R.id.status);
+        mStatusView = (TextView) view.findViewById(R.id.status);
 
         mPinLockView = (PinLockView) view.findViewById(R.id.pin_lock_view);
         IndicatorDots mIndicatorDots = (IndicatorDots) view.findViewById(R.id.indicator_dots);
@@ -92,16 +91,25 @@ public class SignInFragment extends Fragment implements PinLockListener {
 
     @Override
     public void onComplete(String pin) {
-        if (mListener != null) {
-            if (mListener.isPinValid(pin)) {
-                mListener.next();
+
+        if (resetPin) resetPin(pin);
+
+        else if (mListener != null) {
+            if (pinManager.isPinValid(pin) || pinManager.isTemporaryPinValid(pin)) {
+                if (pinManager.isTemporaryPinValid(pin)) {
+                    pinManager.clearTemporaryPin();
+                    resetPin = firstIntent = true;
+                    mStatusView.setText(R.string.enter_your_new_pin);
+                    mPinLockView.resetPinLockView();
+                } else
+                    mListener.next(true);
             } else {
-                Snackbar.make(mPinLockView, "Pin is incorrect", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("reset pin code", new View.OnClickListener() {
+                Snackbar.make(mPinLockView, R.string.invalid_pin, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.reset_pin, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                EmailMessage message = createResetMessage();
-                                mailSender.sendMail(message);
+                                mPinLockView.resetPinLockView();
+                                pinManager.resetPin();
                             }
                         })
                         .show();
@@ -109,13 +117,26 @@ public class SignInFragment extends Fragment implements PinLockListener {
         }
     }
 
-    private EmailMessage createResetMessage() {
-        String to = preference.getString(getString(R.string.key_email));
-        String from = "pcokorie@gmail.com";
-        String header = "HealthWatch - Password reset";
-        String message = String.format("Test");
+    private void resetPin(String pin) {
+        if (firstIntent) {
+            firstIntent = false;
+            mStatusView.setText(R.string.enter_pin_again);
+            lastPin = pin;
+            mPinLockView.resetPinLockView();
 
-        return new EmailMessage(to, from, header, message);
+        } else {
+
+            if (pin.equalsIgnoreCase(lastPin)) {
+                showMessage(getString(R.string.pin_successfully_changed));
+                pinManager.savePin(pin);
+                next();
+            } else {
+                firstIntent = true;
+                showMessage(getString(R.string.incorrect_pin));
+                mPinLockView.resetPinLockView();
+                mStatusView.setText(R.string.enter_your_new_pin);
+            }
+        }
     }
 
     @Override
@@ -126,21 +147,14 @@ public class SignInFragment extends Fragment implements PinLockListener {
     public void onPinChange(int pinLength, String intermediatePin) {
     }
 
-    private void showMessage(String msg) {
-        Snackbar.make(mPinLockView, msg, Snackbar.LENGTH_SHORT).show();
-    }
-
     private void next() {
-        if (fingerPrintIsSetUp()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Intent intent = new Intent(getActivity(), HomeActivity.class);
-                    // startActivity(intent);
-                    showMessage("Launch next activity");
-                }
-            }, 1000);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mListener != null) mListener.next(true);
+            }
+        }, 1000);
+
     }
 
     private boolean fingerPrintIsSetUp() {
@@ -187,9 +201,13 @@ public class SignInFragment extends Fragment implements PinLockListener {
         return false;
     }
 
-    public interface SignInListener {
-        boolean isPinValid(String pin);
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
 
-        void next();
+    public interface SignInListener {
+
+        void next(boolean pinVerified);
     }
 }

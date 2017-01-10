@@ -149,4 +149,21 @@
     <string name="key_email">key_email</string>
     <string name="key_timeout">key_timeout</string>
     <string name="sparkPostApiKey">589a70bb08ce38a68d6d1bc75bde72ae873029e4</string>
+    <string name="invalid_email_address">Invalid email address</string>
+    <string name="privacy">Privacy</string>
+    <string name="notification">Notification</string>
+    <string name="enter_current_pin_code">Enter current pin code</string>
+    <string name="key_pin">key_pin</string>
+    <string name="next">Next</string>
+    <string name="enter_your_new_pin">Enter a new pin</string>
+    <string name="enter_pin_again">Enter pin again to confirm</string>
+    <string name="invalid_pin">Pin is incorrect</string>
+    <string name="new_4_digit_pin">Enter a new 4 digit pin code</string>
+    <string name="reset_mail_sent">A temporary pin code has been sent to your email</string>
+    <string name="enter_your_pin">Enter your pin</string>
+    <string name="pin_successfully_changed">Pin successfully changed</string>
+    <string name="incorrect_pin">Incorrect pin</string>
+    <string name="new_pin_must_be_4_digit">New pin must be 4 digit</string>
+    <string name="reset_pin">reset pin</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

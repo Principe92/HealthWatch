@@ -5,34 +5,24 @@ package edu.slu.parks.healthwatch.settings;
  */
 
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.Locale;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.utils.Util;
 
 /**
  * This fragment shows general preferences only. It is used when the
  * activity is showing a two-pane settings UI.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class GeneralPreferenceFragment extends PreferenceFragment {
-
-    private Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            return respondToPreferenceChange(preference, value);
-        }
-    };
+public class GeneralPreferenceFragment extends BaseSettingsFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,64 +30,30 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.pref_general);
         setHasOptionsMenu(true);
 
+        SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        Preference pref = findPreference(getString(R.string.gps_switch));
-        pref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, PreferenceManager
-                .getDefaultSharedPreferences(pref.getContext())
-                .getBoolean(pref.getKey(), false));
+        initPreference(findPreference(getString(R.string.key_email)), manager.getString(getString(R.string.key_email), ""));
+        initPreference(findPreference(getString(R.string.key_timeout)), manager.getString(getString(R.string.key_timeout), "1"));
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home) {
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private boolean respondToPreferenceChange(Preference preference, Object value) {
+    protected boolean respondToPreferenceChange(Preference preference, Object value) {
         String key = preference.getKey();
 
-        if (key.equals(getString(R.string.gps_switch))) {
-            Boolean checked = (Boolean) value;
+        if (key.equals(getString(R.string.key_email))) {
+            String mail = (String) value;
 
-            if (checked) {
-                requestPermission();
+            if (Util.emailIsValid(mail))
+                preference.setSummary(mail);
+            else {
+                Toast.makeText(getActivity(), R.string.invalid_email_address, Toast.LENGTH_SHORT).show();
+                return false;
             }
+        } else if (key.equals(getString(R.string.key_timeout))) {
+            String timeout = (String) value;
+            preference.setSummary(String.format(Locale.getDefault(), "Request pin after %s minute of inactivity", timeout));
         }
+
         return true;
-    }
-
-    private void requestPermission() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    Constants.REQUEST_ACCESS_FINE_LOCATION);
-
-            setTargetFragment(this, Constants.REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-            case Constants.REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length < 0
-                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-
-                    SwitchPreference pref = (SwitchPreference) findPreference(getString(R.string.gps_switch));
-                    pref.setChecked(false);
-                }
-            }
-        }
     }
 }

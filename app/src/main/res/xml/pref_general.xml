@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="@string/gps_switch"
-        android:summary="Include my location in data"
-        android:title="Allow gps location" />
+
+    <EditTextPreference
+        android:key="@string/key_email"
+        android:summary=""
+        android:title="Contact email" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/sleep_times"
+        android:entryValues="@array/sleep_times_values"
+        android:key="@string/key_timeout"
+        android:summary="Request pin code after 1 minute of inactivity"
+        android:title="Sleep" />
 
 </PreferenceScreen>

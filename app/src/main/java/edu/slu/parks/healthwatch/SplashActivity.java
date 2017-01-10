@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import edu.slu.parks.healthwatch.model.PinManager;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 public class SplashActivity extends AppCompatActivity {
@@ -16,7 +17,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_splash);
 
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PinManager manager = new PinManager(this, null);
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, !manager.hasPin());
         JodaTimeAndroid.init(getApplicationContext());
 
         Intent intent = new Intent(this, LoginActivity.class);

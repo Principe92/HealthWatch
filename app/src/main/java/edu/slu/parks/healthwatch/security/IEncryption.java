@@ -1,7 +1,5 @@
 package edu.slu.parks.healthwatch.security;
 
-import android.content.Context;
-
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -18,7 +16,7 @@ import java.security.cert.CertificateException;
 
 public interface IEncryption {
 
-    String createKeys(Context context) throws NoSuchProviderException,
+    String createKeys() throws NoSuchProviderException,
             NoSuchAlgorithmException, InvalidAlgorithmParameterException;
 
     String sign(String data) throws KeyStoreException,
@@ -28,4 +26,7 @@ public interface IEncryption {
     boolean verify(String input, String signature) throws KeyStoreException,
             CertificateException, NoSuchAlgorithmException, IOException,
             UnrecoverableEntryException, InvalidKeyException, SignatureException;
+
+    boolean hasKeys() throws KeyStoreException, CertificateException, NoSuchAlgorithmException,
+            IOException, UnrecoverableEntryException;
 }

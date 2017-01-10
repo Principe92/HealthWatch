@@ -53,4 +53,8 @@ public class Constants {
     public static final String PIN = "UserPin";
     public static final String PAUSED = "paused";
     public static final String GOHOME = "next";
+    public static final String TEMPORARY_PIN = "temp_pin";
+    public static final String TEMPORARY_PIN_ISSUED = "temp_pin_issued";
+    public static final String CHECK_LOGIN = "check_login";
+    public static final long INTERVAL = 1000;
 }

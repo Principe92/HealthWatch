@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.utils.Util;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,7 +42,7 @@ public class EmailFragment extends Fragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (emailIsValid(email.getText().toString())) {
+                if (Util.emailIsValid(email.getText().toString())) {
                     if (mListener != null) mListener.saveEmail(email.getText().toString());
 
                     hideKeyboard();
@@ -53,7 +54,7 @@ public class EmailFragment extends Fragment {
                 } else {
                     hideKeyboard();
 
-                    Snackbar.make(email, "Invalid email address", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(email, R.string.invalid_email_address, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -72,18 +73,17 @@ public class EmailFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof EmailFragment.EmailListener) {
             mListener = (EmailFragment.EmailListener) context;
+            mListener.changeTitle(getString(R.string.sign_up));
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement EmailListener");
         }
     }
 
-    private boolean emailIsValid(String email) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
     public interface EmailListener {
 
         void saveEmail(String email);
+
+        void changeTitle(String title);
     }
 }

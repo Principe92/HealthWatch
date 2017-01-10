@@ -1,28 +1,55 @@
 package edu.slu.parks.healthwatch;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import org.joda.time.DateTime;
-
+import edu.slu.parks.healthwatch.model.IPinManager;
+import edu.slu.parks.healthwatch.model.PinManager;
 import edu.slu.parks.healthwatch.security.IPreference;
 import edu.slu.parks.healthwatch.security.Preference;
 import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.utils.SleepTimer;
 
 /**
  * Created by okori on 02-Jan-17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements PinManager.PinManagerListener {
     protected IPreference preference;
+    protected IPinManager pinManager;
+    private SleepTimer sleepTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         preference = new Preference(this);
+        pinManager = new PinManager(this, this);
 
+        long startTime = getTimeOut() * 60 * 1000;
+        sleepTimer = new SleepTimer(this, startTime, Constants.INTERVAL);
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+
+        //Reset the timer on user interaction...
+        sleepTimer.cancel();
+        sleepTimer.start();
+    }
+
+    private int getTimeOut() {
+        int timeout;
+
+        try {
+            timeout = Integer.parseInt(preference.getString(getString(R.string.key_timeout)));
+
+        } catch (NumberFormatException e) {
+            timeout = 1;
+        }
+
+        return timeout;
     }
 
     public abstract int getLayoutId();
@@ -31,24 +58,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        preference.saveString(DateTime.now().toString(), Constants.PAUSED);
+        sleepTimer.cancel();
     }
 
     @Override
     public void onResume() {
 
-        String paused = preference.getString(Constants.PAUSED);
-        int timeout = preference.getInteger(getString(R.string.key_timeout), 1);
-
-        if (!paused.isEmpty()) {
-            DateTime pausedTime = DateTime.parse(paused);
-            DateTime now = DateTime.now();
-            if (now.getDayOfYear() > pausedTime.getDayOfYear() || (now.getMinuteOfDay() - pausedTime.getMinuteOfDay()) > timeout) {
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-            }
-        }
-
+        sleepTimer.start();
         super.onResume();
+    }
+
+    @Override
+    public void showMessage(String message) {
     }
 }

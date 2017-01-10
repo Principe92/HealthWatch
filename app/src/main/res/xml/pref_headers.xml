@@ -6,4 +6,16 @@
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
 
+    <header
+        android:id="@+id/pref_privacy"
+        android:fragment="edu.slu.parks.healthwatch.settings.PrivacyPreferenceFragment"
+        android:icon="@mipmap/ic_lock_outline_black_24dp"
+        android:title="@string/privacy" />
+
+    <header
+        android:id="@+id/pref_notification"
+        android:fragment="edu.slu.parks.healthwatch.settings.NotificationPreferenceFragment"
+        android:icon="@mipmap/ic_notifications_black_24dp"
+        android:title="@string/notification" />
+
 </preference-headers>

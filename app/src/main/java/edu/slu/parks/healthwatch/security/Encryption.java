@@ -29,9 +29,11 @@ import edu.slu.parks.healthwatch.utils.Constants;
  */
 public class Encryption implements IEncryption {
 
+    private final Context context;
     private String mAlias;
 
-    public Encryption() {
+    public Encryption(Context context) {
+        this.context = context;
         this.mAlias = Constants.ALIAS;
     }
 
@@ -40,7 +42,7 @@ public class Encryption implements IEncryption {
     }
 
     @Override
-    public String createKeys(Context context) throws NoSuchProviderException,
+    public String createKeys() throws NoSuchProviderException,
             NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
         DateTime start = new DateTime();
@@ -111,5 +113,17 @@ public class Encryption implements IEncryption {
         sello.initVerify(((KeyStore.PrivateKeyEntry) entry).getCertificate());
         sello.update(data);
         return sello.verify(sig);
+    }
+
+    @Override
+    public boolean hasKeys() throws KeyStoreException, CertificateException, NoSuchAlgorithmException,
+            IOException, UnrecoverableEntryException {
+        KeyStore keyStore = KeyStore.getInstance(Constants.KEYSTORE);
+
+        keyStore.load(null);
+
+        KeyStore.Entry entry = keyStore.getEntry(mAlias, null);
+
+        return entry != null && entry instanceof KeyStore.PrivateKeyEntry;
     }
 }

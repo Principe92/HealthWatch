@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andrognito.pinlockview.IndicatorDots;
 import com.andrognito.pinlockview.PinLockListener;
@@ -28,10 +29,12 @@ import com.andrognito.pinlockview.PinLockView;
 
 import edu.slu.parks.healthwatch.HomeActivity;
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.model.IPinManager;
+import edu.slu.parks.healthwatch.model.PinManager;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 
-public class SignUpFragment extends Fragment implements PinLockListener {
+public class SignUpFragment extends Fragment implements PinLockListener, PinManager.PinManagerListener {
 
     private PinLockView mPinLockView;
     private boolean firstIntent = true;
@@ -40,6 +43,7 @@ public class SignUpFragment extends Fragment implements PinLockListener {
     private FingerprintManager mFingerprintManager;
     private boolean useFingerPrint;
     private SignUpListener mListener;
+    private IPinManager pinManager;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -52,6 +56,9 @@ public class SignUpFragment extends Fragment implements PinLockListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFingerprintManager = getActivity().getSystemService(FingerprintManager.class);
         }
+
+        pinManager = new PinManager(getContext(), this);
+        pinManager.createKeys();
     }
 
     @Override
@@ -100,7 +107,7 @@ public class SignUpFragment extends Fragment implements PinLockListener {
 
         if (firstIntent) {
             firstIntent = false;
-            statusView.setText("Enter pin again to confirm");
+            statusView.setText(R.string.enter_pin_again);
             lastPin = pin;
             mPinLockView.resetPinLockView();
 
@@ -108,19 +115,15 @@ public class SignUpFragment extends Fragment implements PinLockListener {
 
             if (pin.equalsIgnoreCase(lastPin)) {
                 showMessage("Pin successfully registered");
-                savePin(pin);
+                pinManager.savePin(pin);
                 next();
             } else {
                 firstIntent = true;
-                showMessage("Incorrect pin");
+                showMessage(getString(R.string.incorrect_pin));
                 mPinLockView.resetPinLockView();
-                statusView.setText("Choose a pin");
+                statusView.setText(R.string.enter_your_new_pin);
             }
         }
-    }
-
-    private void savePin(String pin) {
-        if (mListener != null) mListener.savePin(pin);
     }
 
     @Override
@@ -131,8 +134,9 @@ public class SignUpFragment extends Fragment implements PinLockListener {
     public void onPinChange(int pinLength, String intermediatePin) {
     }
 
-    private void showMessage(String msg) {
-        Snackbar.make(mPinLockView, msg, Snackbar.LENGTH_SHORT).show();
+    @Override
+    public void showMessage(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void next() {
@@ -198,6 +202,6 @@ public class SignUpFragment extends Fragment implements PinLockListener {
     }
 
     public interface SignUpListener {
-        boolean savePin(String pin);
+
     }
 }
