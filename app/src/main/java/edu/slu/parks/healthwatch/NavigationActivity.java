@@ -20,6 +20,7 @@ import edu.slu.parks.healthwatch.views.ISection;
 
 public abstract class NavigationActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    protected NavigationView navigationView;
     protected int activeSection;
     private List<ISection> sections;
 
@@ -33,6 +34,13 @@ public abstract class NavigationActivity extends BaseActivity implements Navigat
         sections = Util.buildNavigationSections();
 
         restoreValues(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        navigationView.setCheckedItem(activeSection);
     }
 
     @Override

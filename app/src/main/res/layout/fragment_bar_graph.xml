@@ -1,0 +1,37 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.slu.parks.healthwatch.fragments.graph.LineGraphFragment">
+
+    <LinearLayout
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <lecho.lib.hellocharts.view.ColumnChartView
+            android:id="@+id/graph_systolic"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <lecho.lib.hellocharts.view.ColumnChartView
+            android:id="@+id/graph_diastolic"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/no_record"
+        layout="@layout/no_data"
+        android:visibility="gone" />
+</FrameLayout>
+
+
+
+

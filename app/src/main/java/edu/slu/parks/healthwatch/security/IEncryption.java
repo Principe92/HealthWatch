@@ -15,7 +15,6 @@ import java.security.cert.CertificateException;
  */
 
 public interface IEncryption {
-
     String createKeys() throws NoSuchProviderException,
             NoSuchAlgorithmException, InvalidAlgorithmParameterException;
 

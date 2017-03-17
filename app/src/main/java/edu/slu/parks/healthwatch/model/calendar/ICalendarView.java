@@ -1,5 +1,7 @@
 package edu.slu.parks.healthwatch.model.calendar;
 
+import org.joda.time.DateTime;
+
 import edu.slu.parks.healthwatch.model.ViewType;
 
 /**
@@ -16,4 +18,12 @@ public interface ICalendarView {
     ViewType getViewType();
 
     int getId();
+
+    String getSqlQuery(DateTime date);
+
+    int getXAxisValue(DateTime date);
+
+    String getXAxisName();
+
+    String getName();
 }

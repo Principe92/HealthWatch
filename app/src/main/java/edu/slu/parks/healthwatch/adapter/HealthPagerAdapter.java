@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.utils;
+package edu.slu.parks.healthwatch.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
+import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
+
 /**
  * Created by okori on 07-Nov-16.
  */
@@ -13,5 +15,7 @@ public interface IHealthDb {
 
     long addRecord(Record record);
 
-    List<Record> getRecordByDate(DateTime date);
+    List<Record> getRecordByDate(DateTime date, ICalendarView view);
+
+    Record getRecord(int recordId);
 }

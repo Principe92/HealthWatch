@@ -1,5 +1,6 @@
 package edu.slu.parks.healthwatch.settings;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,11 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.model.IPinManager;
-import edu.slu.parks.healthwatch.model.PinManager;
+import edu.slu.parks.healthwatch.security.FingerPrint;
+import edu.slu.parks.healthwatch.security.IFingerPrint;
+import edu.slu.parks.healthwatch.security.IPinManager;
+import edu.slu.parks.healthwatch.security.PinManager;
 
 /**
- * Created by okori on 05-Jan-17.
+ * Created by okorie on 05-Jan-17.
  */
 
 public class PinCodePreference extends DialogPreference implements PinManager.PinManagerListener {
@@ -25,11 +28,33 @@ public class PinCodePreference extends DialogPreference implements PinManager.Pi
     private String newPin;
     private TextView passwordView;
     private IPinManager pinManager;
+    private IFingerPrint fingerPrint;
+    private View fingerPrintImage;
+    private TextView usePrint;
 
     public PinCodePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         pinManager = new PinManager(context, this);
+        fingerPrint = new FingerPrint(context, new FingerPrint.FingerPrintListener() {
+            @Override
+            public void requestFingerPrintPermission() {
+                fingerPrint.requestFingerPrintPermission((Activity) getContext());
+            }
+
+            @Override
+            public void addFingerPrints() {
+                fingerPrint.addFingerPrints(passwordView, (Activity) getContext());
+            }
+
+            @Override
+            public void onAuthenticated() {
+                status.setText(R.string.new_4_digit_pin);
+                passwordView.setVisibility(View.GONE);
+                clearText();
+                pinIsVerified = true;
+            }
+        });
 
         setDialogLayoutResource(R.layout.pincode);
         setPositiveButtonText(R.string.next);
@@ -61,6 +86,15 @@ public class PinCodePreference extends DialogPreference implements PinManager.Pi
                 pinManager.resetPin();
             }
         });
+
+        if (fingerPrint.isFingerprintAuthAvailable() && fingerPrint.canUseFingerPrint()) {
+            fingerPrintImage = (getDialog().findViewById(R.id.fingerprint));
+            fingerPrintImage.setVisibility(View.VISIBLE);
+            usePrint = (TextView) getDialog().findViewById(R.id.checkBox);
+            usePrint.setVisibility(View.VISIBLE);
+        }
+
+        fingerPrint.startListening();
     }
 
     private void changePin() {
@@ -74,6 +108,8 @@ public class PinCodePreference extends DialogPreference implements PinManager.Pi
             if (pinIsVerified) {
                 status.setText(R.string.new_4_digit_pin);
                 passwordView.setVisibility(View.GONE);
+                fingerPrintImage.setVisibility(View.GONE);
+                usePrint.setVisibility(View.GONE);
                 clearText();
             }
         } else {
@@ -104,6 +140,13 @@ public class PinCodePreference extends DialogPreference implements PinManager.Pi
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDialogClosed(boolean positiveResult) {
+        super.onDialogClosed(positiveResult);
+
+        fingerPrint.stopListening();
     }
 
     private void clearText() {

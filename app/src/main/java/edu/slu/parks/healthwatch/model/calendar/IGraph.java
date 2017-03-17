@@ -1,9 +1,11 @@
 package edu.slu.parks.healthwatch.model.calendar;
 
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+
 import java.util.List;
 
 import edu.slu.parks.healthwatch.database.Record;
-import edu.slu.parks.healthwatch.model.ViewType;
 
 /**
  * Created by okori on 18-Nov-16.
@@ -11,5 +13,9 @@ import edu.slu.parks.healthwatch.model.ViewType;
 
 public interface IGraph {
 
-    void loadGraph(List<Record> date, ViewType viewType);
+    void loadGraph(List<Record> date, ICalendarView calendarView);
+
+    GraphType getType();
+
+    Fragment getNewInstance(Bundle arg);
 }

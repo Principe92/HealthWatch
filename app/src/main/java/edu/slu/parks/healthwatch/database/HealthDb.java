@@ -13,6 +13,7 @@ import java.util.List;
 
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
+import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
 
 /**
  * Created by okori on 07-Nov-16.
@@ -32,18 +33,20 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
 
     @Override
     public Record getLatestReading() {
-        String query = "SELECT * FROM " + Table.NAME
-                + " ORDER BY datetime(date) DESC"
-                + " LIMIT 1";
-
-
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(Sql.getLatestReading, null);
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
+        try {
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
 
-            return mapper.toRecord(cursor);
+                return mapper.toRecord(cursor);
+            }
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+                db.close();
+            }
         }
 
         return null;
@@ -52,8 +55,6 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
     @Override
     public long addRecord(Record record) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-
 
         // Inserting Row
         ContentValues values = mapper.toDbRow(record);
@@ -64,28 +65,54 @@ public class HealthDb extends SQLiteOpenHelper implements IHealthDb {
     }
 
     @Override
-    public List<Record> getRecordByDate(DateTime date) {
+    public List<Record> getRecordByDate(DateTime date, ICalendarView view) {
         List<Record> records = new ArrayList<>();
-
-        String query = "SELECT * FROM " + Table.NAME
-                //+ " WHERE date like '%" + myDate.toString("yyyy-MM-d", date) + "%'";
-                + " WHERE strftime('%Y-%m-%d', date) = strftime('%Y-%m-%d', '" + date.toString() + "')";
-
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(view.getSqlQuery(date), null);
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Record record = mapper.toRecord(cursor);
+        try {
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    Record record = mapper.toRecord(cursor);
 
-                // Adding contact to list
-                if (record != null) records.add(record);
-            } while (cursor.moveToNext());
+                    // Adding contact to list
+                    if (record != null) records.add(record);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+                db.close();
+            }
         }
 
         // return contact list
         return records;
+    }
+
+    @Override
+    public Record getRecord(int recordId) {
+        String query = "SELECT * FROM " + Table.NAME
+                + " WHERE id = " + recordId;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        try {
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+
+                return mapper.toRecord(cursor);
+            }
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+                db.close();
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -1,6 +1,9 @@
 package edu.slu.parks.healthwatch.model.calendar;
 
+import org.joda.time.DateTime;
+
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.database.Table;
 import edu.slu.parks.healthwatch.model.ViewType;
 
 /**
@@ -32,5 +35,28 @@ public class MonthView implements ICalendarView {
     @Override
     public int getId() {
         return R.id.cal_month;
+    }
+
+    @Override
+    public String getSqlQuery(DateTime date) {
+        return "SELECT * FROM " + Table.NAME
+                + " WHERE strftime('%Y', date) = strftime('%Y', '" + date.toString() + "')"
+                + " AND strftime('%m', date) = strftime('%m', '" + date.toString() + "')"
+                + " ORDER BY id";
+    }
+
+    @Override
+    public int getXAxisValue(DateTime date) {
+        return date.getWeekyear();
+    }
+
+    @Override
+    public String getXAxisName() {
+        return "Week";
+    }
+
+    @Override
+    public String getName() {
+        return getViewType().name();
     }
 }

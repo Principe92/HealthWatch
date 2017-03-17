@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.model;
+package edu.slu.parks.healthwatch.security;
 
 /**
  * Created by okori on 06-Jan-17.

@@ -5,4 +5,13 @@
     <color name="colorAccent">#FF4081</color>
     <color name="red">#FF0000</color>
     <color name="login_bg">#e8eaf6</color>
+
+    <!-- pressure colors -->
+    <color name="pressure_low">#8BC34A</color>
+    <color name="pressure_normal">#4CAF50</color>
+    <color name="pressure_pre">#FFEB3B</color>
+    <color name="pressure_high_1">#FFC107</color>
+    <color name="pressure_high_2">#FF9800</color>
+    <color name="pressure_high_crises">#F44336</color>
+
 </resources>

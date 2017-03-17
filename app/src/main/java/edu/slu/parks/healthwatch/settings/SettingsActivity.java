@@ -1,18 +1,23 @@
 package edu.slu.parks.healthwatch.settings;
 
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.noelchew.sparkpostutil.library.EmailListener;
@@ -21,12 +26,16 @@ import java.util.List;
 
 import edu.slu.parks.healthwatch.AppCompatPreferenceActivity;
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.security.FingerPrint;
+import edu.slu.parks.healthwatch.security.IFingerPrint;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements PrivacyPreferenceFragment.SettingsListener, EmailListener {
 
     private SwitchPreference gpsSetting;
+    private SwitchPreference fingerPrintSetting;
+    private IFingerPrint fingerPrint;
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -45,6 +54,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pri
         if (bar != null) {
             bar.setDisplayHomeAsUpEnabled(true);
         }
+
+        fingerPrint = new FingerPrint(getApplicationContext(), new FingerPrint.FingerPrintListener() {
+            @Override
+            public void requestFingerPrintPermission() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ActivityCompat.requestPermissions(SettingsActivity.this,
+                            new String[]{Manifest.permission.USE_FINGERPRINT},
+                            Constants.REQUEST_FINGERPRINT);
+                }
+            }
+
+            @Override
+            public void addFingerPrints() {
+                Snackbar.make(getSupportActionBar().getCustomView(), "Fingerprint is not setup", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Go to settings", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                startActivityForResult(new Intent(Settings.ACTION_SECURITY_SETTINGS), 0);
+                            }
+                        })
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticated() {
+
+            }
+        });
     }
 
     @Override
@@ -90,6 +127,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pri
                     gpsSetting.setChecked(false);
                 }
             }
+            break;
+
+            case Constants.REQUEST_FINGERPRINT: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length < 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    fingerPrintSetting.setChecked(false);
+                }
+            }
+            break;
         }
     }
 
@@ -103,6 +151,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pri
                     Constants.REQUEST_ACCESS_FINE_LOCATION);
 
         }
+    }
+
+    @Override
+    public void requestFingerPrintPermission(SwitchPreference preference) {
+        fingerPrintSetting = preference;
+        fingerPrint.IsFingerPrintSetUp();
     }
 
     private void showMessage(String msg) {

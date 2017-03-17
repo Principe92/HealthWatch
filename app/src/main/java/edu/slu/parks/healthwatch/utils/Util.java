@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.fragments.graph.BarGraphFragment;
+import edu.slu.parks.healthwatch.fragments.graph.LineGraphFragment;
+import edu.slu.parks.healthwatch.fragments.graph.TableFragment;
 import edu.slu.parks.healthwatch.model.EmailMessage;
 import edu.slu.parks.healthwatch.model.calendar.DayView;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
+import edu.slu.parks.healthwatch.model.calendar.IGraph;
 import edu.slu.parks.healthwatch.model.calendar.MonthView;
 import edu.slu.parks.healthwatch.model.calendar.WeekView;
 import edu.slu.parks.healthwatch.model.calendar.YearView;
@@ -52,6 +56,15 @@ public class Util {
         return sections;
     }
 
+    public static List<IGraph> buildGraphs() {
+        List<IGraph> graphs = new ArrayList<>();
+        graphs.add(new LineGraphFragment());
+        graphs.add(new BarGraphFragment());
+        graphs.add(new TableFragment());
+
+        return graphs;
+    }
+
     public static boolean emailIsValid(String email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
@@ -70,5 +83,13 @@ public class Util {
         String message = String.format(Locale.getDefault(), msg, code);
 
         return new EmailMessage(to, from, header, message);
+    }
+
+    public static boolean isNullorEmpty(String mac) {
+        return mac == null || mac.isEmpty();
+    }
+
+    public static String getTag(Class<?> object) {
+        return object.getName();
     }
 }

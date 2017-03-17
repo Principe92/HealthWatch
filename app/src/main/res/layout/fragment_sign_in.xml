@@ -52,7 +52,7 @@
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:text="Use my fingerprint"
+        android:text="@string/use_my_fingerprint"
         android:visibility="gone" />
 
 

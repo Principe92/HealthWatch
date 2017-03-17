@@ -7,4 +7,6 @@ package edu.slu.parks.healthwatch.model.calendar;
 public interface GraphListener {
 
     void onGraphReady();
+
+    void showRecordDetails(int index);
 }

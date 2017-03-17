@@ -1,11 +1,7 @@
 package edu.slu.parks.healthwatch;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,9 +24,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.Set;
-
 import edu.slu.parks.healthwatch.bluetooth.ConnectThread;
+import edu.slu.parks.healthwatch.bluetooth.GattBluetooth;
+import edu.slu.parks.healthwatch.bluetooth.IBluetooth;
+import edu.slu.parks.healthwatch.bluetooth.OtherBluetooth;
 import edu.slu.parks.healthwatch.bluetooth.Phase;
 import edu.slu.parks.healthwatch.model.ILocation;
 import edu.slu.parks.healthwatch.model.MyLocation;
@@ -40,57 +37,23 @@ import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 public class WaitingActivity extends BaseActivity implements AlertDialogFragment.Listener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, OtherBluetooth.IBluetoothListener {
 
     private GoogleApiClient mGoogleApiClient;
     private boolean includeLocation;
     private ILocation gps;
-    private BluetoothAdapter mBluetoothAdapter;
     private TextView pressureView;
     private TextView statusView;
-    private BluetoothDevice healthWatch;
-    private android.os.Handler bluetoothHandler;
+    private IBluetooth bluetooth;
     private ConnectThread connectThread;
-    private boolean aquiringSystolic;
-    private boolean aquiringDiastolic;
+    private boolean acquiringSystolic;
+    private boolean acquiringDiastolic;
     private int diastolic;
     private int systolic;
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                Snackbar.make(findViewById(R.id.status),
-                        String.format("%s found", device.getAddress()),
-                        Snackbar.LENGTH_SHORT).show();
-
-                String name = device.getName() != null ? device.getName() : "";
-                if (name.toLowerCase().contains(Constants.DEVICE_NAME.toLowerCase())) {
-                    Snackbar.make(findViewById(R.id.status),
-                            String.format("%s found as valid", name),
-                            Snackbar.LENGTH_SHORT).show();
-
-                    healthWatch = device;
-                    mBluetoothAdapter.cancelDiscovery();
-                    startConnection(device);
-                }
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            healthWatch = savedInstanceState.getParcelable(Constants.BT_ADDRESS);
-            startConnection(healthWatch);
-        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.measure);
@@ -98,9 +61,9 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
 
         pressureView = (TextView) findViewById(R.id.txt_pressure);
         statusView = (TextView) findViewById(R.id.status);
+        bluetooth = new GattBluetooth(this, this);
 
         gps = new MyLocation(this);
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         includeLocation = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(getString(R.string.gps_switch), false);
 
@@ -111,8 +74,6 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
                 .build();
 
         Log.d(getLocalClassName(), "includeLocation: " + includeLocation);
-
-        handleBluetooth();
     }
 
     @Override
@@ -120,152 +81,11 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
         return R.layout.activity_waiting;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        if (healthWatch != null) {
-            savedInstanceState.putParcelable(Constants.BT_ADDRESS, healthWatch);
-            //savedInstanceState.putString(Constants.BT_NAME, healthWatch.getName());
-        }
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    private void requestBluetoothActivation() {
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.REQUEST_ENABLE_BT) {
-            if (resultCode == RESULT_OK) {
-                connectToDevice();
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        mBluetoothAdapter.cancelDiscovery();
-        unregisterReceiver(mReceiver);
-    }
-
-    public void handleBluetooth() {
-        updateStatus(R.string.verify_bluetooth);
-
-        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
-            Snackbar.make(findViewById(R.id.status), "Bluetooth is off", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("TURN ON", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mBluetoothAdapter.enable();
-                            connectToDevice();
-                        }
-                    }).show();
-
-        } else if (mBluetoothAdapter == null) {
-            Snackbar.make(findViewById(R.id.status),
-                    "Device does not support bluetooth",
-                    Snackbar.LENGTH_SHORT).show();
-        } else {
-            connectToDevice();
-        }
-    }
-
-    private void updateStatus(int message) {
-        statusView.setText(message);
-    }
-
-    private void connectToDevice() {
-        BluetoothDevice device = getPairedDevice();
-
-        if (device != null) {
-            updateStatus(R.string.connecting);
-            healthWatch = device;
-            startConnection(device);
-
-        } else {
-            updateStatus(R.string.search);
-            performDeviceDiscovery();
-        }
-    }
-
-    private void startConnection(BluetoothDevice device) {
-        updateStatus(String.format("Connecting to %s", device.getName()));
-
-        bluetoothHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message inputMessage) {
-                Phase phase = Phase.toEnum(inputMessage.what);
-
-                // Log.d(getClass().getName(), "phase: " + phase.name());
-                if (phase != Phase.UNKNOWN) {
-                    switch (phase) {
-                        case START:
-                            updateStatus("Starting measurement");
-                            break;
-                        case INFLATING:
-                            updateStatus(R.string.inflating);
-                            break;
-                        case DEFLATING:
-                            updateStatus(R.string.deflating);
-                            break;
-                        case SYSTOLIC:
-                            aquiringSystolic = true;
-                            updateStatus(R.string.getting_systolic);
-                            break;
-                        case DIASTOLIC:
-                            aquiringDiastolic = true;
-                            updateStatus(R.string.getting_diatolic);
-                            break;
-
-                        case DONE:
-                            next();
-                            break;
-                    }
-                } else {
-                    if (aquiringDiastolic) {
-                        diastolic = inputMessage.what;
-                        aquiringDiastolic = false;
-                    } else if (aquiringSystolic) {
-                        systolic = inputMessage.what;
-                        aquiringSystolic = false;
-                    } else pressureView.setText(String.valueOf(inputMessage.what));
-                }
-            }
-        };
-
-        if (connectThread != null) connectThread.cancel();
-        connectThread = new ConnectThread(device, bluetoothHandler);
-        connectThread.start();
-    }
-
-    private void updateStatus(String message) {
-        if (statusView != null)
-            statusView.setText(message);
-    }
-
-    private void performDeviceDiscovery() {
-        mBluetoothAdapter.cancelDiscovery();
-        mBluetoothAdapter.startDiscovery();
-    }
-
-    private BluetoothDevice getPairedDevice() {
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0) {
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-
-                if (device.getName().toLowerCase().contains(Constants.DEVICE_NAME.toLowerCase()))
-                    return device;
-            }
-        }
-
-        return null;
+        bluetooth.close();
     }
 
     private void next() {
@@ -319,8 +139,6 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
         }
 
         disconnectGps();
-
-        connectToDevice();
     }
 
     private void disconnectGps() {
@@ -360,6 +178,8 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
     protected void onPause() {
         super.onPause();
 
+        bluetooth.onPause();
+
         if (mGoogleApiClient.isConnected())
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
@@ -368,16 +188,63 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
     public void onResume() {
         super.onResume();
 
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);
-
+        bluetooth.onResume();
         updateLocation();
+    }
+
+    private void startConnection(BluetoothDevice device) {
+        notify(String.format("Connecting to %s", device.getName()));
+
+        Handler bluetoothHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                Phase phase = Phase.toEnum(inputMessage.what);
+
+                // Log.d(getClass().getName(), "phase: " + phase.name());
+                if (phase != Phase.UNKNOWN) {
+                    switch (phase) {
+                        case START:
+                            WaitingActivity.this.notify("Starting measurement");
+                            break;
+                        case INFLATING:
+                            updateStatus(R.string.inflating);
+                            break;
+                        case DEFLATING:
+                            updateStatus(R.string.deflating);
+                            break;
+                        case SYSTOLIC:
+                            acquiringSystolic = true;
+                            updateStatus(R.string.getting_systolic);
+                            break;
+                        case DIASTOLIC:
+                            acquiringDiastolic = true;
+                            updateStatus(R.string.getting_diatolic);
+                            break;
+
+                        case DONE:
+                            next();
+                            break;
+                    }
+                } else {
+                    if (acquiringDiastolic) {
+                        diastolic = inputMessage.what;
+                        acquiringDiastolic = false;
+                    } else if (acquiringSystolic) {
+                        systolic = inputMessage.what;
+                        acquiringSystolic = false;
+                    } else pressureView.setText(String.valueOf(inputMessage.what));
+                }
+            }
+        };
+
+        if (connectThread != null) connectThread.cancel();
+        connectThread = new ConnectThread(device, bluetoothHandler);
+        connectThread.start();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         mGoogleApiClient.connect();
     }
 
@@ -387,5 +254,54 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
 
         mGoogleApiClient.disconnect();
         if (connectThread != null) connectThread.cancel();
+    }
+
+    @Override
+    public void updateStatus(int message) {
+        statusView.setText(message);
+        notify(getString(message));
+    }
+
+    @Override
+    public void updateStatus(String message) {
+        statusView.setText(message);
+        notify(message);
+    }
+
+    @Override
+    public void displayData(String data) {
+        statusView.setText(data);
+    }
+
+    @Override
+    public void onDeviceFound(BluetoothDevice device) {
+        String name = device.getName() != null ? device.getName() : device.getAddress();
+        notify(String.format("%s found", name));
+
+        // startConnection(device);
+    }
+
+    private void notify(String text) {
+        Snackbar.make(statusView,
+                text,
+                Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBluetoothNotAvailable() {
+        notify(getString(R.string.no_bluetooth));
+        statusView.setText(R.string.no_bluetooth);
+        onBackPressed();
+    }
+
+    @Override
+    public void onBluetoothOff() {
+        Snackbar.make(statusView, "Bluetooth is off", Snackbar.LENGTH_INDEFINITE)
+                .setAction("Turn on", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bluetooth.enable();
+                    }
+                }).show();
     }
 }

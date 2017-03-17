@@ -1,6 +1,7 @@
 package edu.slu.parks.healthwatch;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,9 +14,9 @@ import com.noelchew.sparkpostutil.library.EmailListener;
 import edu.slu.parks.healthwatch.fragments.EmailFragment;
 import edu.slu.parks.healthwatch.fragments.SignInFragment;
 import edu.slu.parks.healthwatch.fragments.SignUpFragment;
-import edu.slu.parks.healthwatch.model.IPinManager;
-import edu.slu.parks.healthwatch.model.PinManager;
+import edu.slu.parks.healthwatch.security.IPinManager;
 import edu.slu.parks.healthwatch.security.IPreference;
+import edu.slu.parks.healthwatch.security.PinManager;
 import edu.slu.parks.healthwatch.security.Preference;
 import edu.slu.parks.healthwatch.utils.Constants;
 
@@ -60,9 +61,18 @@ public class LoginActivity extends AppCompatActivity implements EmailFragment.Em
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
 
-        SignUpFragment fragment = (SignUpFragment) getSupportFragmentManager().findFragmentByTag(TAG);
-        if (fragment != null)
-            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case Constants.REQUEST_FINGERPRINT: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    SignUpFragment fragment = (SignUpFragment) getSupportFragmentManager().findFragmentByTag(TAG);
+                    if (fragment != null)
+                        fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                }
+            }
+        }
     }
 
     @Override

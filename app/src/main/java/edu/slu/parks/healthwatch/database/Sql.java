@@ -18,4 +18,8 @@ public class Sql {
                     + ");";
 
     public static final String UPGRADE_TABLE = "DROP TABLE IF EXISTS " + Table.NAME;
+    public static final String getLatestReading =
+            "SELECT * FROM " + Table.NAME
+                    + " ORDER BY datetime(date) DESC"
+                    + " LIMIT 1";
 }

@@ -37,7 +37,6 @@ public class HomeActivity extends NavigationActivity
         HistoryFragment.OnFragmentInteractionListener,
         IAddressReceiver {
 
-    private NavigationView navigationView;
     private Record record;
     private AddressResultReceiver addressResultReceiver;
     private IHealthDb database;
@@ -142,8 +141,6 @@ public class HomeActivity extends NavigationActivity
     @Override
     public void onResume() {
         super.onResume();
-
-        navigationView.setCheckedItem(activeSection);
 
         if (addressResultReceiver != null) {
             addressResultReceiver.setReceiver(this);

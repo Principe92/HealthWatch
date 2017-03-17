@@ -6,6 +6,13 @@
         android:summary="Include my location in data"
         android:title="Allow gps location" />
 
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/key_fingerprint"
+        android:summary="@string/no"
+        android:title="Log in using fingerprint" />
+
     <edu.slu.parks.healthwatch.settings.PinCodePreference
         android:key="@string/key_pin"
         android:title="Change pin code" />

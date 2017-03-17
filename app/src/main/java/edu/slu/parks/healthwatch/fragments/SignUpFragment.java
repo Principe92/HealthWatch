@@ -1,19 +1,13 @@
 package edu.slu.parks.healthwatch.fragments;
 
 
-import android.Manifest;
-import android.app.KeyguardManager;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +23,10 @@ import com.andrognito.pinlockview.PinLockView;
 
 import edu.slu.parks.healthwatch.HomeActivity;
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.model.IPinManager;
-import edu.slu.parks.healthwatch.model.PinManager;
-import edu.slu.parks.healthwatch.utils.Constants;
+import edu.slu.parks.healthwatch.security.FingerPrint;
+import edu.slu.parks.healthwatch.security.IFingerPrint;
+import edu.slu.parks.healthwatch.security.IPinManager;
+import edu.slu.parks.healthwatch.security.PinManager;
 
 
 public class SignUpFragment extends Fragment implements PinLockListener, PinManager.PinManagerListener {
@@ -40,10 +35,9 @@ public class SignUpFragment extends Fragment implements PinLockListener, PinMana
     private boolean firstIntent = true;
     private TextView statusView;
     private String lastPin;
-    private FingerprintManager mFingerprintManager;
-    private boolean useFingerPrint;
     private SignUpListener mListener;
     private IPinManager pinManager;
+    private IFingerPrint fingerPrint;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -53,12 +47,26 @@ public class SignUpFragment extends Fragment implements PinLockListener, PinMana
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mFingerprintManager = getActivity().getSystemService(FingerprintManager.class);
-        }
-
         pinManager = new PinManager(getContext(), this);
         pinManager.createKeys();
+
+        fingerPrint = new FingerPrint(getContext(), new FingerPrint.FingerPrintListener() {
+            @TargetApi(Build.VERSION_CODES.M)
+            @Override
+            public void requestFingerPrintPermission() {
+                fingerPrint.requestFingerPrintPermission(getActivity());
+            }
+
+            @Override
+            public void addFingerPrints() {
+                fingerPrint.addFingerPrints(mPinLockView, getActivity());
+            }
+
+            @Override
+            public void onAuthenticated() {
+
+            }
+        });
     }
 
     @Override
@@ -87,14 +95,14 @@ public class SignUpFragment extends Fragment implements PinLockListener, PinMana
         mPinLockView.setPinLength(Integer.parseInt(getString(R.string.pinLength)));
         mPinLockView.setPinLockListener(this);
 
-        if (isFingerprintAuthAvailable()) {
+        if (fingerPrint.isFingerprintAuthAvailable()) {
             (view.findViewById(R.id.fingerprint)).setVisibility(View.VISIBLE);
             CheckBox usePrint = (CheckBox) view.findViewById(R.id.checkBox);
             usePrint.setVisibility(View.VISIBLE);
             usePrint.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    useFingerPrint = b;
+                    fingerPrint.setUseFingerPrint(b);
                 }
             });
         }
@@ -140,7 +148,7 @@ public class SignUpFragment extends Fragment implements PinLockListener, PinMana
     }
 
     private void next() {
-        if (fingerPrintIsSetUp()) {
+        if (!fingerPrint.canUseFingerPrint() || fingerPrint.IsFingerPrintSetUp()) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -149,51 +157,6 @@ public class SignUpFragment extends Fragment implements PinLockListener, PinMana
                 }
             }, 1000);
         }
-    }
-
-    private boolean fingerPrintIsSetUp() {
-        if (!useFingerPrint) return true;
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            KeyguardManager keyguardManager = getActivity().getSystemService(KeyguardManager.class);
-
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.USE_FINGERPRINT)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.USE_FINGERPRINT},
-                        Constants.REQUEST_FINGERPRINT);
-
-                return false;
-            }
-
-            if (keyguardManager.isKeyguardSecure() && mFingerprintManager.hasEnrolledFingerprints()) {
-                return true;
-
-            } else {
-                Snackbar.make(mPinLockView, "Fingerprint is not setup", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Go to settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                startActivityForResult(new Intent(Settings.ACTION_SECURITY_SETTINGS), 0);
-                            }
-                        })
-                        .show();
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean isFingerprintAuthAvailable() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // noinspection ResourceType
-            return mFingerprintManager != null && mFingerprintManager.isHardwareDetected();
-        }
-
-        return false;
     }
 
     @Override

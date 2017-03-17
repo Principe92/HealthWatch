@@ -38,11 +38,12 @@ public class PrivacyPreferenceFragment extends BaseSettingsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.pref_data_sync);
+        addPreferencesFromResource(R.xml.pref_privacy);
         setHasOptionsMenu(true);
 
         SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
         initPreference(findPreference(getString(R.string.gps_switch)), manager.getBoolean(getString(R.string.gps_switch), false));
+        initPreference(findPreference(getString(R.string.key_fingerprint)), manager.getBoolean(getString(R.string.key_fingerprint), false));
     }
 
     @Override
@@ -55,6 +56,13 @@ public class PrivacyPreferenceFragment extends BaseSettingsFragment {
             if (checked && mListener != null) {
                 mListener.requestPermission((SwitchPreference) preference);
             }
+        } else if (key.equals(getString(R.string.key_fingerprint))) {
+            Boolean checked = (Boolean) value;
+            preference.setSummary(checked ? getString(R.string.yes) : getString(R.string.no));
+
+            if (checked && mListener != null) {
+                mListener.requestFingerPrintPermission((SwitchPreference) preference);
+            }
         }
 
         return true;
@@ -64,5 +72,7 @@ public class PrivacyPreferenceFragment extends BaseSettingsFragment {
     public interface SettingsListener {
 
         void requestPermission(SwitchPreference preference);
+
+        void requestFingerPrintPermission(SwitchPreference preference);
     }
 }

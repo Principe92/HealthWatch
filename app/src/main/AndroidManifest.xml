@@ -16,6 +16,10 @@
         android:name="android.permission.USE_FINGERPRINT"
         android:required="false" />
 
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -72,6 +76,10 @@
 
         <service
             android:name=".utils.FetchAddressIntentService"
+            android:exported="false" />
+
+        <service
+            android:name=".bluetooth.BluetoothLeService"
             android:exported="false" />
 
         <activity

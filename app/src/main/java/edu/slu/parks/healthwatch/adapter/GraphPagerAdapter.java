@@ -1,34 +1,36 @@
-package edu.slu.parks.healthwatch.utils;
+package edu.slu.parks.healthwatch.adapter;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import edu.slu.parks.healthwatch.fragments.GraphFragment;
-import edu.slu.parks.healthwatch.fragments.TableFragment;
+import java.util.List;
+
+import edu.slu.parks.healthwatch.model.calendar.IGraph;
+import edu.slu.parks.healthwatch.utils.Constants;
 
 /**
  * Created by okori on 14-Nov-16.
  */
 
 public class GraphPagerAdapter extends FragmentPagerAdapter {
+    private List<IGraph> graphs;
 
-    public GraphPagerAdapter(FragmentManager fm) {
+    public GraphPagerAdapter(FragmentManager fm, List<IGraph> graphs) {
         super(fm);
+        this.graphs = graphs;
     }
 
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment = position == 2 ? new TableFragment() : new GraphFragment();
         Bundle arg = new Bundle();
         arg.putInt(Constants.GRAPH_TYPE, position);
-        fragment.setArguments(arg);
-        return fragment;
+        return graphs.get(position).getNewInstance(arg);
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return graphs.size();
     }
 }

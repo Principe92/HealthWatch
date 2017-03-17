@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-import edu.slu.parks.healthwatch.model.PinManager;
+import edu.slu.parks.healthwatch.security.PinManager;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 public class SplashActivity extends AppCompatActivity {

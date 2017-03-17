@@ -1,26 +1,25 @@
-package edu.slu.parks.healthwatch.fragments;
+package edu.slu.parks.healthwatch.fragments.graph;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.Gravity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import java.util.List;
 
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.adapter.TableListAdapter;
 import edu.slu.parks.healthwatch.database.Record;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
-import edu.slu.parks.healthwatch.model.ViewType;
 import edu.slu.parks.healthwatch.model.calendar.GraphListener;
 import edu.slu.parks.healthwatch.model.calendar.GraphType;
+import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
 import edu.slu.parks.healthwatch.model.calendar.IGraph;
 import edu.slu.parks.healthwatch.utils.Constants;
 
@@ -30,7 +29,10 @@ public class TableFragment extends Fragment implements IGraph {
     private GraphType graphType;
     private IDate joda;
     private GraphListener mListener;
-    private TableLayout table;
+    private View defaultView;
+    private RecyclerView mRecyclerView;
+    private TableListAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     public void onAttach(Context context) {
@@ -57,12 +59,25 @@ public class TableFragment extends Fragment implements IGraph {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_table, container, false);
-
-        table = (TableLayout) view.findViewById(R.id.table);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.table);
+        defaultView = view.findViewById(R.id.no_record);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter (see also next example)
+        mAdapter = new TableListAdapter(joda, getContext());
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -73,52 +88,25 @@ public class TableFragment extends Fragment implements IGraph {
     }
 
     @Override
-    public void loadGraph(List<Record> records, ViewType viewType) {
+    public void loadGraph(List<Record> records, ICalendarView calendarView) {
+        mAdapter.setRecords(records);
 
-        if (records != null) {
-            table.removeAllViewsInLayout();
-
-            addHeader();
-
-            for (Record record :
-                    records) {
-                addRow(record);
-            }
-
+        if (records == null || records.size() == 0) {
+            defaultView.setVisibility(View.VISIBLE);
+        } else {
+            defaultView.setVisibility(View.GONE);
         }
     }
 
-    private void addRow(Record record) {
-        TableRow row = new TableRow(getContext());
-
-        TextView date = buildTextView();
-        date.setText(joda.toString(Constants.HISTORY_DATE_FORMAT, record.date));
-        row.addView(date);
-
-        TextView sys = buildTextView();
-        sys.setText(String.valueOf(record.systolic));
-        row.addView(sys);
-
-        TextView dia = buildTextView();
-        dia.setText(String.valueOf(record.diastolic));
-        row.addView(dia);
-
-        table.addView(row);
+    @Override
+    public GraphType getType() {
+        return GraphType.TABLE;
     }
 
-    private TextView buildTextView() {
-        TextView text = new TextView(getContext());
-        text.setGravity(Gravity.FILL);
-        text.setPadding(0, 8, 0, 8);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            text.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        }
-
-        return text;
-    }
-
-    private void addHeader() {
-        LayoutInflater.from(getContext()).inflate(R.layout.table_header, table, true);
+    @Override
+    public Fragment getNewInstance(Bundle arg) {
+        TableFragment frag = new TableFragment();
+        frag.setArguments(arg);
+        return frag;
     }
 }

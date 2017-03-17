@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:srcCompat="@mipmap/ic_fingerprint_black_48dp" />
 
     <CheckBox
@@ -53,7 +53,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
         android:text="Use my fingerprint"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 
 </LinearLayout>

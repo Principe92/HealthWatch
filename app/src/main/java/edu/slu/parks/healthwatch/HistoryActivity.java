@@ -3,6 +3,7 @@ package edu.slu.parks.healthwatch;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -10,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,31 +22,35 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import edu.slu.parks.healthwatch.adapter.GraphPagerAdapter;
+import edu.slu.parks.healthwatch.async.RecordListTask;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;
+import edu.slu.parks.healthwatch.fragments.graph.RecordFragment;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
 import edu.slu.parks.healthwatch.model.calendar.GraphListener;
-import edu.slu.parks.healthwatch.model.calendar.GraphTask;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
 import edu.slu.parks.healthwatch.model.calendar.IGraph;
 import edu.slu.parks.healthwatch.utils.Constants;
-import edu.slu.parks.healthwatch.utils.GraphPagerAdapter;
+import edu.slu.parks.healthwatch.utils.DepthPageTransformer;
 import edu.slu.parks.healthwatch.utils.Util;
 
 public class HistoryActivity extends NavigationActivity
         implements CompactCalendarView.CompactCalendarViewListener,
-        GraphListener, PopupMenu.OnMenuItemClickListener, GraphTask.TaskListener {
+        GraphListener, PopupMenu.OnMenuItemClickListener, RecordListTask.TaskListener {
 
     private AppBarLayout mAppBarLayout;
     private IDate date;
+    private List<IGraph> graphs;
     private CompactCalendarView mCompactCalendarView;
-    private GraphTask currentTask;
+    private RecordListTask currentTask;
     private IHealthDb healthDb;
 
     private boolean isExpanded = false;
@@ -52,11 +58,15 @@ public class HistoryActivity extends NavigationActivity
     private DateTime selectedDate;
     private List<ICalendarView> calendarViews;
     private ICalendarView selectedView;
+    private List<Record> records;
+    private TextView calendarStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         calendarViews = Util.buildCalendarViews();
+        graphs = Util.buildGraphs();
 
         if (savedInstanceState != null) {
             selectedDate = new DateTime(savedInstanceState.getString(Constants.SELECTED_DATE));
@@ -66,7 +76,7 @@ public class HistoryActivity extends NavigationActivity
             selectedView = getCalendarView(R.id.cal_day);
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
@@ -78,21 +88,34 @@ public class HistoryActivity extends NavigationActivity
         ((DrawerLayout) findViewById(R.id.drawer_layout)).addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        calendarStatus = (TextView) findViewById(R.id.calendar_view);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+
+        final ImageView arrow = (ImageView) findViewById(R.id.date_picker_arrow);
 
         // Set up the CompactCalendarView
         mCompactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         mCompactCalendarView.setLocale(java.util.TimeZone.getDefault(), Locale.ENGLISH);
         mCompactCalendarView.setShouldDrawDaysHeader(true);
         mCompactCalendarView.setListener(this);
+        ((AppBarLayout) findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if ((Math.abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) && !isExpanded) {
+//                    isExpanded = false;
+//                    ViewCompat.animate(arrow).rotation(0).start();
+                    //   Toast.makeText(getApplicationContext(), "Collapsed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(new GraphPagerAdapter(getSupportFragmentManager()));
+        mViewPager.setAdapter(new GraphPagerAdapter(getSupportFragmentManager(), graphs));
+        mViewPager.setPageTransformer(true, new DepthPageTransformer());
 
-        final ImageView arrow = (ImageView) findViewById(R.id.date_picker_arrow);
 
         findViewById(R.id.date_picker_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +134,7 @@ public class HistoryActivity extends NavigationActivity
 
         // Set current date to today
         setCurrentDate(selectedDate.toDate());
+        setCalendarStatus(selectedView.getName());
     }
 
     public ICalendarView getCalendarView(int id) {
@@ -149,6 +173,10 @@ public class HistoryActivity extends NavigationActivity
         }
     }
 
+    private void setCalendarStatus(String title) {
+        calendarStatus.setText(title);
+    }
+
     public void setSubtitle(String subtitle) {
         TextView datePickerTextView = (TextView) findViewById(R.id.date_picker_text_view);
 
@@ -171,21 +199,15 @@ public class HistoryActivity extends NavigationActivity
 
     @Override
     public void onDayClick(Date dateClicked) {
-        String format = DateTime.now().year().get() < new DateTime(dateClicked).year().get()
-                ? Constants.HISTORY_DATE_FORMAT : Constants.NORMAL_DATE_FORMAT;
-
-        setSubtitle(date.toString(format, new DateTime(dateClicked)));
-        loadGraph(dateClicked);
+        setSubtitle(date.toString(Constants.HISTORY_DATE_FORMAT, new DateTime(dateClicked)));
+        loadGraph(dateClicked, selectedView);
         selectedDate = new DateTime(dateClicked);
     }
 
     @Override
     public void onMonthScroll(Date firstDayOfNewMonth) {
-        String format = DateTime.now().year().get() < new DateTime(firstDayOfNewMonth).year().get()
-                ? Constants.HISTORY_DATE_FORMAT : Constants.NORMAL_DATE_FORMAT;
-
-        setSubtitle(date.toString(format, new DateTime(firstDayOfNewMonth)));
-        loadGraph(firstDayOfNewMonth);
+        setSubtitle(date.toString(Constants.HISTORY_DATE_FORMAT, new DateTime(firstDayOfNewMonth)));
+        loadGraph(firstDayOfNewMonth, selectedView);
         selectedDate = new DateTime(firstDayOfNewMonth);
     }
 
@@ -194,18 +216,41 @@ public class HistoryActivity extends NavigationActivity
         onDayClick(selectedDate.toDate());
     }
 
+    @Override
+    public void showRecordDetails(int index) {
+        Log.d(getClass().getName(), "record id: " + index);
+        Record record = this.records.get(index);
+
+        if (record != null) {
+            android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            DialogFragment newFragment = RecordFragment.newInstance(record);
+            newFragment.show(ft, "dialog");
+        }
+    }
+
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-
         ICalendarView view = getCalendarView(item.getItemId());
 
         if (view != null) {
+            ICalendarView last = selectedView;
             selectedView = view;
+
+            if (last != selectedView) onDayClick(selectedDate.toDate());
+
             view.toggleCheck();
             item.setChecked(view.getStatus());
         }
 
+        setCalendarStatus(selectedView.getName());
         return true;
     }
 
@@ -223,19 +268,19 @@ public class HistoryActivity extends NavigationActivity
         }
     }
 
-    public void loadGraph(Date date) {
+    public void loadGraph(Date date, ICalendarView view) {
         DateTime now = DateTime.now();
         DateTime dt = new DateTime(date);
         dt = dt.withTime(now.toLocalTime());
 
         if (cancelPotentialDownload(dt)) {
-            currentTask = new GraphTask(healthDb, dt);
+            currentTask = new RecordListTask(healthDb, dt);
             currentTask.setmListener(this);
-            currentTask.execute();
+            currentTask.execute(view);
         }
     }
 
-    private GraphTask getGraphTask(DateTime date) {
+    private RecordListTask getGraphTask(DateTime date) {
         if (currentTask != null) {
 
             if (currentTask.getDate().equals(date)) {
@@ -248,21 +293,22 @@ public class HistoryActivity extends NavigationActivity
     }
 
     private boolean cancelPotentialDownload(DateTime dateTime) {
-        GraphTask graphTask = getGraphTask(dateTime);
+        RecordListTask recordListTask = getGraphTask(dateTime);
 
-        return graphTask == null;
+        return recordListTask == null;
     }
 
     @Override
     public void onTaskFinished(List<Record> records) {
         int size = mViewPager.getAdapter().getCount();
+        this.records = records == null ? new ArrayList<Record>() : records;
 
         for (int i = 0; i < size; i++) {
             String name = Util.makeFragmentName(mViewPager.getId(), i);
             IGraph fragment = (IGraph) getSupportFragmentManager().findFragmentByTag(name);
 
             if (fragment != null && ((Fragment) fragment).isResumed()) {
-                fragment.loadGraph(records, selectedView.getViewType());
+                fragment.loadGraph(records, selectedView);
             }
         }
     }

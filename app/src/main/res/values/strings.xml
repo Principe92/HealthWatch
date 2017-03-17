@@ -166,4 +166,8 @@
     <string name="new_pin_must_be_4_digit">New pin must be 4 digit</string>
     <string name="reset_pin">reset pin</string>
     <string name="sign_up">Sign Up</string>
+    <string name="key_fingerprint">key_fingerprint</string>
+    <string name="yes">Yes</string>
+    <string name="use_my_fingerprint">Use my fingerprint</string>
+    <string name="no_bluetooth">Device does not support bluetooth</string>
 </resources>

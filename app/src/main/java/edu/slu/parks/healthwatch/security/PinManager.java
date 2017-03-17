@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.model;
+package edu.slu.parks.healthwatch.security;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,10 +16,9 @@ import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.security.Encryption;
-import edu.slu.parks.healthwatch.security.IEncryption;
-import edu.slu.parks.healthwatch.security.IPreference;
-import edu.slu.parks.healthwatch.security.Preference;
+import edu.slu.parks.healthwatch.model.EmailMessage;
+import edu.slu.parks.healthwatch.model.IMail;
+import edu.slu.parks.healthwatch.model.Mail;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.utils.Util;
 
@@ -36,7 +35,7 @@ public class PinManager implements IPinManager {
     public PinManager(Context context, PinManagerListener mListener) {
         this.context = context;
         this.preference = new Preference(context);
-        this.encryption = new Encryption(context);
+        this.encryption = new Encryption(context, Constants.ALIAS);
         this.mailSender = new Mail(context);
         this.mListener = mListener;
     }

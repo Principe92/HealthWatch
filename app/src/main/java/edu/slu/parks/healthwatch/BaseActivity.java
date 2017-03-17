@@ -3,9 +3,9 @@ package edu.slu.parks.healthwatch;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import edu.slu.parks.healthwatch.model.IPinManager;
-import edu.slu.parks.healthwatch.model.PinManager;
+import edu.slu.parks.healthwatch.security.IPinManager;
 import edu.slu.parks.healthwatch.security.IPreference;
+import edu.slu.parks.healthwatch.security.PinManager;
 import edu.slu.parks.healthwatch.security.Preference;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.utils.SleepTimer;
@@ -25,9 +25,6 @@ public abstract class BaseActivity extends AppCompatActivity implements PinManag
         setContentView(getLayoutId());
         preference = new Preference(this);
         pinManager = new PinManager(this, this);
-
-        long startTime = getTimeOut() * 60 * 1000;
-        sleepTimer = new SleepTimer(this, startTime, Constants.INTERVAL);
     }
 
     @Override
@@ -35,8 +32,11 @@ public abstract class BaseActivity extends AppCompatActivity implements PinManag
         super.onUserInteraction();
 
         //Reset the timer on user interaction...
-        sleepTimer.cancel();
-        sleepTimer.start();
+
+        if (sleepTimer != null) {
+            sleepTimer.cancel();
+            sleepTimer.start();
+        }
     }
 
     private int getTimeOut() {
@@ -63,9 +63,11 @@ public abstract class BaseActivity extends AppCompatActivity implements PinManag
 
     @Override
     public void onResume() {
-
-        sleepTimer.start();
         super.onResume();
+
+        long startTime = getTimeOut() * 60 * 1000;
+        sleepTimer = new SleepTimer(this, startTime, Constants.INTERVAL);
+        sleepTimer.start();
     }
 
     @Override

@@ -32,9 +32,9 @@ public class Encryption implements IEncryption {
     private final Context context;
     private String mAlias;
 
-    public Encryption(Context context) {
+    public Encryption(Context context, String mAlias) {
         this.context = context;
-        this.mAlias = Constants.ALIAS;
+        this.mAlias = mAlias;
     }
 
     public void setmAlias(String mAlias) {

@@ -26,7 +26,7 @@ public class MyLocation implements ILocation {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putLong(context.getString(R.string.gps_longitude), Double.doubleToRawLongBits(location.getLongitude()));
         editor.putLong(context.getString(R.string.gps_latitude), Double.doubleToRawLongBits(location.getLatitude()));
-        editor.commit();
+        editor.apply();
 
         Log.d(this.getClass().getName(), "longitude: " + location.getLongitude());
         Log.d(this.getClass().getName(), "latitude: " + location.getLatitude());

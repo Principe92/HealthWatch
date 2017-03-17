@@ -1,5 +1,7 @@
 package edu.slu.parks.healthwatch.utils;
 
+import android.content.IntentFilter;
+
 /**
  * Created by okori on 11/3/2016.
  */
@@ -29,16 +31,16 @@ public class Constants {
     public static final String LONGITUDE = "longitude";
     public static final String SYSTOLIC = "systolic";
     public static final String DIASTOLIC = "diastolic";
-    public static final String DATE_FORMAT = "MMMM dd, YYYY @ h:mm a";
+    public static final String DATE_FORMAT = "MMMM dd, YYYY @ h:mm:ss a";
     public static final String ACTIVE_SECTION = "action_section";
-    public static final String HISTORY_DATE_FORMAT = "MM/d/yyyy";
+    public static final String HISTORY_DATE_FORMAT = "d MMMM yyyy";
     public static final String NORMAL_DATE_FORMAT = "d MMMM";
     public static final String GRAPH_TYPE = "graph type";
     public static final String DB_DATE_FORMAT = "YYYY-MM-ddTHH:mm:SS.SSS";
     public static final String SELECTED_DATE = "selected_date";
     public static final String SELECTED_VIEW = "selected_view";
     public static final int REQUEST_ENABLE_BT = 300;
-    public static final String DEVICE_NAME = "laptop";
+    public static final String DEVICE_NAME = "HealthWatch";
     public static final int REQUEST_BT_CANCEL_DISCOVERY = 301;
     public static final String BT_ADDRESS = "mac_address";
     public static final String BT_NAME = "bt_name";
@@ -57,4 +59,30 @@ public class Constants {
     public static final String TEMPORARY_PIN_ISSUED = "temp_pin_issued";
     public static final String CHECK_LOGIN = "check_login";
     public static final long INTERVAL = 1000;
+    public static final String MAC = "macAddress";
+
+    public static class Gatt {
+        public static final String BLOOD_PRESSURE = "00001810-0000-1000-8000-00805f9b34fb";
+        public static final String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+        public final static String ACTION_GATT_CONNECTED =
+                "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+        public final static String ACTION_GATT_DISCONNECTED =
+                "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+        public final static String ACTION_GATT_SERVICES_DISCOVERED =
+                "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
+        public final static String ACTION_DATA_AVAILABLE =
+                "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+        public final static String EXTRA_DATA =
+                "com.example.bluetooth.le.EXTRA_DATA";
+
+
+        public static IntentFilter makeGattUpdateIntentFilter() {
+            final IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Constants.Gatt.ACTION_GATT_CONNECTED);
+            intentFilter.addAction(Constants.Gatt.ACTION_GATT_DISCONNECTED);
+            intentFilter.addAction(Constants.Gatt.ACTION_GATT_SERVICES_DISCOVERED);
+            intentFilter.addAction(Constants.Gatt.ACTION_DATA_AVAILABLE);
+            return intentFilter;
+        }
+    }
 }
