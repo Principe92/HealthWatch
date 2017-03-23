@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ import edu.slu.parks.healthwatch.utils.Util;
 
 public class BluetoothLeService extends Service {
     public final static UUID BLOOD_PRESSURE =
-            UUID.fromString(Constants.Gatt.BLOOD_PRESSURE);
+            UUID.fromString(Constants.Gatt.BLOOD_PRESSURE_SERVICE);
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -39,6 +40,8 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private List<BluetoothGattCharacteristic> gattCharacteristics;
+    private int index = 0;
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -71,18 +74,24 @@ public class BluetoothLeService extends Service {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
 
+            gattCharacteristics = new ArrayList<>();
+
             List<BluetoothGattService> services = gatt.getServices();
+            Log.i(TAG, String.format("We have %d services", services.size()));
+
             for (BluetoothGattService service : services) {
                 List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
 
                 if (characteristics != null && !characteristics.isEmpty()) {
+
+                    Log.i(TAG, String.format("%s has %d characteristics", service.getUuid().toString(), characteristics.size()));
                     for (BluetoothGattCharacteristic ch : characteristics
                             ) {
 
-                        // setCharacteristicNotification(ch, true);
-                        // readCharacteristic(ch);
+
                         final int charaProp = ch.getProperties();
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                            gattCharacteristics.add(ch);
                             // If there is an active notification on a characteristic, clear
                             // it first so it doesn't update the data field on the user interface.
                             if (mNotifyCharacteristic != null) {
@@ -95,14 +104,16 @@ public class BluetoothLeService extends Service {
                         }
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mNotifyCharacteristic = ch;
-                            setCharacteristicNotification(
-                                    ch, true);
+                            setCharacteristicNotification(ch, true);
                         }
                     }
                 }
             }
 
-            //   gatt.readCharacteristic(new BluetoothGattCharacteristic(UUID.fromString(Constants.Gatt.BLOOD_PRESSURE), 1, 0));
+            Log.i(TAG, String.format("Size of gatts: %d", gattCharacteristics.size()));
+            //   setCharacteristicNotification(gattCharacteristics.get(index), false);
+            //  readCharacteristic(gattCharacteristics.get(index));
+            //   gatt.readCharacteristic(new BluetoothGattCharacteristic(UUID.fromString(Constants.Gatt.BLOOD_PRESSURE_SERVICE), 1, 0));
         }
 
         @Override
@@ -112,6 +123,12 @@ public class BluetoothLeService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(Constants.Gatt.ACTION_DATA_AVAILABLE, characteristic);
             }
+
+            //  setCharacteristicNotification(gattCharacteristics.get(index), true);
+            if (index < gattCharacteristics.size() - 1)
+                readCharacteristic(gattCharacteristics.get(++index));
+            else
+                index = 0;
         }
 
         @Override
@@ -130,35 +147,42 @@ public class BluetoothLeService extends Service {
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-        // This is special handling for the Heart Rate Measurement profile.  Data parsing is
-        // carried out as per profile specifications:
-        // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
-        if (BLOOD_PRESSURE.equals(characteristic.getUuid())) {
-            int flag = characteristic.getProperties();
-            int format = -1;
-            if ((flag & 0x01) != 0) {
-                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                Log.d(TAG, "Heart rate format UINT16.");
-            } else {
-                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                Log.d(TAG, "Heart rate format UINT8.");
-            }
-            final int heartRate = characteristic.getIntValue(format, 1);
-            Log.d(TAG, String.format("Received heart rate: %d", heartRate));
-            intent.putExtra(Constants.Gatt.EXTRA_DATA, String.valueOf(heartRate));
-        } else {
-            // For all other profiles, writes the data formatted in HEX.
-            final byte[] data = characteristic.getValue();
-            if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for (byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                intent.putExtra(Constants.Gatt.EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-            }
-        }
+        final byte[] data = characteristic.getValue();
+        String intentData;
 
-        Log.i(TAG, "Read characteristic: " + characteristic.getUuid().toString());
-        sendBroadcast(intent);
+        if (data != null && data.length > 1) {
+            switch (characteristic.getUuid().toString()) {
+                case Constants.Gatt.DEVICE_NAME:
+                    intentData = new String(data);
+                    break;
+
+                case Constants.Gatt.BLOOD_PRESSURE_MEASUREMENT:
+                    int flag = characteristic.getProperties();
+                    int format;
+                    if ((flag & 0x01) != 0) {
+                        format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                        Log.d(TAG, "Heart rate format UINT16.");
+                    } else {
+                        format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                        Log.d(TAG, "Heart rate format UINT8.");
+                    }
+                    final int heartRate = characteristic.getIntValue(format, 1);
+                    Log.d(TAG, String.format("Received heart rate: %d", heartRate));
+                    intentData = String.valueOf(heartRate);
+                    break;
+
+                default:
+                    final StringBuilder stringBuilder = new StringBuilder(data.length);
+                    for (byte byteChar : data)
+                        stringBuilder.append(String.format("%02X ", byteChar));
+                    intentData = stringBuilder.toString();
+                    break;
+            }
+
+            Log.i(TAG, String.format("Characteristic : %s read with data %s", characteristic.getUuid().toString(), intentData));
+            intent.putExtra(Constants.Gatt.EXTRA_DATA, intentData);
+            sendBroadcast(intent);
+        }
     }
 
     @Override
@@ -260,6 +284,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
@@ -275,10 +300,12 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to Blood Pressure.
-        if (BLOOD_PRESSURE.equals(characteristic.getUuid())) {
+        if (Util.getUUID(Constants.Gatt.BLOOD_PRESSURE_MEASUREMENT).equals(characteristic.getUuid()) ||
+                Util.getUUID(Constants.Gatt.INTERMEDIATE_CUFF_PRESSURE).equals(characteristic.getUuid())) {
             Log.i(TAG, "Found Blood Pressure Characteristics");
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(Constants.Gatt.CLIENT_CHARACTERISTIC_CONFIG));

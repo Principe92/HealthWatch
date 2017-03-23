@@ -36,6 +36,8 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
     private IPreference preference;
 
     private BluetoothLeService mBluetoothLeService;
+    private boolean dataIsAvailable;
+    private String mDeviceAddress;
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -45,6 +47,7 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
                 listener.updateStatus(String.format("Connected to %s", mBluetoothLeService.getDeviceName()));
             } else if (Constants.Gatt.ACTION_GATT_DISCONNECTED.equals(action)) {
                 listener.updateStatus(String.format("Disconnected from %s", mBluetoothLeService.getDeviceName()));
+                onDeviceDisconnected();
             } else if (Constants.Gatt.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 // displayGattServices(mBluetoothLeService.getSupportedGattServices());
@@ -53,7 +56,6 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
             }
         }
     };
-    private String mDeviceAddress;
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -76,7 +78,6 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
             mBluetoothLeService = null;
         }
     };
-
     public GattBluetooth(final Context context, final OtherBluetooth.IBluetoothListener listener) {
         this.context = context;
         this.preference = new Preference(context);
@@ -105,6 +106,14 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
         };
 
         enable();
+    }
+
+    private void onDeviceDisconnected() {
+        if (dataIsAvailable) {
+            listener.onDataAvailable();
+        } else {
+            handleBluetooth();
+        }
     }
 
     @Override
@@ -141,7 +150,6 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
     private void startService() {
         Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
         context.bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-        // context.startService(gattServiceIntent);
     }
 
     private boolean isBluetoothAvailable() {
@@ -150,8 +158,6 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
 
     @Override
     public void close() {
-        mBluetoothLeService.disconnect();
-        mBluetoothLeService.close();
         context.unbindService(mServiceConnection);
         mBluetoothLeService = null;
     }

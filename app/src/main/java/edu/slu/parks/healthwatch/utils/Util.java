@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.fragments.graph.BarGraphFragment;
@@ -30,6 +31,7 @@ import edu.slu.parks.healthwatch.views.SettingsSection;
  */
 
 public class Util {
+
     public static String makeFragmentName(int viewId, int position) {
         return "android:switcher:" + viewId + ":" + position;
     }
@@ -91,5 +93,9 @@ public class Util {
 
     public static String getTag(Class<?> object) {
         return object.getName();
+    }
+
+    public static UUID getUUID(String name) {
+        return UUID.fromString(name);
     }
 }

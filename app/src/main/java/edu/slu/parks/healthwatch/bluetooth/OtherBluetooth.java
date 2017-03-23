@@ -129,5 +129,7 @@ public class OtherBluetooth extends BroadcastReceiver implements IBluetooth {
         void updateStatus(String message);
 
         void displayData(String data);
+
+        void onDataAvailable();
     }
 }

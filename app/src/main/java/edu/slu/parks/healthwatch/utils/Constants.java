@@ -14,14 +14,10 @@ public class Constants {
 
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;
-    public static final String PACKAGE_NAME =
-            "com.google.android.gms.location.sample.locationaddress";
+    public static final String PACKAGE_NAME = "com.google.android.gms.location.sample.locationaddress";
     public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
-    public static final String RESULT_DATA_KEY = PACKAGE_NAME +
-            ".RESULT_DATA_KEY";
-    public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
-            ".LOCATION_DATA_EXTRA";
-
+    public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
+    public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_DATA_EXTRA";
     public static final String TAG = "HealthWatch";
     public static final int REQUEST_ACCESS_FINE_LOCATION = 200;
     public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 201;
@@ -62,18 +58,38 @@ public class Constants {
     public static final String MAC = "macAddress";
 
     public static class Gatt {
-        public static final String BLOOD_PRESSURE = "00001810-0000-1000-8000-00805f9b34fb";
+        public static final String GENERIC_ACCESS_SERVICE = "00001800-0000-1000-8000-00805f9b34fb";
+        public static final String DEVICE_NAME = "00002a00-0000-1000-8000-00805f9b34fb";
+        public static final String APPEARANCE = "00002a01-0000-1000-8000-00805f9b34fb";
+        public static final String PERIPHERAL_PRIVACY_FLAG = "00002a02-0000-1000-8000-00805f9b34fb";
+        public static final String RECONNECTION_ADDRESS = "00002a03-0000-1000-8000-00805f9b34fb";
+        public static final String PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS = "00002a04-0000-1000-8000-00805f9b34fb";
+
+        public static final String GENERIC_ATTRIBUTE_SERVICE = "00001801-0000-1000-8000-00805f9b34fb";
+        public static final String SERVICE_CHANGED = "00002a05-0000-1000-8000-00805f9b34fb";
+
+        public static final String BLOOD_PRESSURE_SERVICE = "00001810-0000-1000-8000-00805f9b34fb";
+        public static final String BLOOD_PRESSURE_MEASUREMENT = "00002a35-0000-1000-8000-00805f9b34fb";
+        public static final String INTERMEDIATE_CUFF_PRESSURE = "00002a36-0000-1000-8000-00805f9b34fb";
+        public static final String BLOOD_PRESSURE_FEATURE = "00002a49-0000-1000-8000-00805f9b34fb";
+
+        public static final String GENERIC_INFORMATION_SERVICE = "0000180a-0000-1000-8000-00805f9b34fb";
+        public static final String MANUFACTURER_NAME = "00002a29-0000-1000-8000-00805f9b34fb";
+        public static final String SYSTEM_ID = "00002a23-0000-1000-8000-00805f9b34fb";
+        public static final String MODEL_NUMBER = "00002a24-0000-1000-8000-00805f9b34fb";
+        public static final String SERIAL_NUMBER = "00002a25-0000-1000-8000-00805f9b34fb";
+        public static final String FIRMWARE_REVISION = "00002a26-0000-1000-8000-00805f9b34fb";
+        public static final String HARDWARE_REVISION = "00002a27-0000-1000-8000-00805f9b34fb";
+        public static final String SOFTWARE_REVISION = "00002a28-0000-1000-8000-00805f9b34fb";
+        public static final String REGULATORY_CERTIFICATION_LIST = "00002a2a-0000-1000-8000-00805f9b34fb";
+        public static final String PNP_ID = "00002a50-0000-1000-8000-00805f9b34fb";
+
         public static final String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-        public final static String ACTION_GATT_CONNECTED =
-                "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-        public final static String ACTION_GATT_DISCONNECTED =
-                "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-        public final static String ACTION_GATT_SERVICES_DISCOVERED =
-                "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
-        public final static String ACTION_DATA_AVAILABLE =
-                "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-        public final static String EXTRA_DATA =
-                "com.example.bluetooth.le.EXTRA_DATA";
+        public final static String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+        public final static String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+        public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
+        public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+        public final static String EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA";
 
 
         public static IntentFilter makeGattUpdateIntentFilter() {

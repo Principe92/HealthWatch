@@ -274,6 +274,11 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
     }
 
     @Override
+    public void onDataAvailable() {
+        next();
+    }
+
+    @Override
     public void onDeviceFound(BluetoothDevice device) {
         String name = device.getName() != null ? device.getName() : device.getAddress();
         notify(String.format("%s found", name));
