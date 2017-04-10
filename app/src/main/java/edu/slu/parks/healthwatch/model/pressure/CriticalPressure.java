@@ -15,4 +15,9 @@ public class CriticalPressure implements IPressure {
     public int getColor() {
         return R.color.pressure_high_crises;
     }
+
+    @Override
+    public String toString() {
+        return "Critical";
+    }
 }

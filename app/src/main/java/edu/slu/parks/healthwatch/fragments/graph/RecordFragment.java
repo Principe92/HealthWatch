@@ -34,6 +34,7 @@ public class RecordFragment extends DialogFragment {
     private AddressDownloader addressDownloader;
     private int recordId;
     private IDate joda;
+    private TextView statusView;
 
     public RecordFragment() {
         // Required empty public constructor
@@ -71,6 +72,7 @@ public class RecordFragment extends DialogFragment {
         locationView = (TextView) layout.findViewById(R.id.txt_location);
         commentView = (TextView) layout.findViewById(R.id.txt_comment);
         dateView = (TextView) layout.findViewById(R.id.txt_date);
+        statusView = (TextView) layout.findViewById(R.id.txt_status);
 
         return layout;
     }
@@ -90,13 +92,14 @@ public class RecordFragment extends DialogFragment {
                         public void run() {
                             systolicView.setText(String.format(Locale.getDefault(), "Systolic: %d mmHg", record.systolic));
                             diastolicView.setText(String.format(Locale.getDefault(), "Diastolic: %d mmHg", record.diastolic));
+                            statusView.setText(String.format("Status: %s", PressureType.GetType(record.diastolic).toString()));
 
                             String cmt = record.comment != null ? record.comment : "";
                             commentView.setText(cmt);
                             dateView.setText(joda.toString(Constants.DATE_FORMAT, record.date));
 
                             addressDownloader.download(record, locationView);
-                            layout.setBackgroundResource(PressureType.GetType(record.systolic).getColor());
+                            layout.setBackgroundResource(PressureType.GetType(record.diastolic).getColor());
                         }
                     });
                 }

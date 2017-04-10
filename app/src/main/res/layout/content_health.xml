@@ -7,12 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.slu.parks.healthwatch.HealthActivity"
+    tools:context="edu.slu.parks.healthwatch.health.HealthActivity"
     tools:showIn="@layout/activity_health">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        tools:context="edu.slu.parks.healthwatch.health.HealthActivity" />
 
 </LinearLayout>

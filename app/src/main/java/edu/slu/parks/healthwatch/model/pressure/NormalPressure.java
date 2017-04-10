@@ -15,4 +15,9 @@ public class NormalPressure implements IPressure {
     public int getColor() {
         return R.color.pressure_normal;
     }
+
+    @Override
+    public String toString() {
+        return "Normal Pressure";
+    }
 }

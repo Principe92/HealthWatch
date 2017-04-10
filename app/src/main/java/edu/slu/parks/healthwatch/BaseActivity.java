@@ -2,6 +2,7 @@ package edu.slu.parks.healthwatch;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import edu.slu.parks.healthwatch.security.IPinManager;
 import edu.slu.parks.healthwatch.security.IPreference;
@@ -25,6 +26,18 @@ public abstract class BaseActivity extends AppCompatActivity implements PinManag
         setContentView(getLayoutId());
         preference = new Preference(this);
         pinManager = new PinManager(this, this);
+    }
+
+    protected Toolbar setUpToolbar(int titleRes) {
+        return setUpToolbar(getString(titleRes));
+    }
+
+    protected Toolbar setUpToolbar(String title) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
+
+        return toolbar;
     }
 
     @Override

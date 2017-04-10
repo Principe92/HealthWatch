@@ -41,7 +41,6 @@ public class BluetoothLeService extends Service {
     private int mConnectionState = STATE_DISCONNECTED;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<BluetoothGattCharacteristic> gattCharacteristics;
-    private int index = 0;
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -125,10 +124,10 @@ public class BluetoothLeService extends Service {
             }
 
             //  setCharacteristicNotification(gattCharacteristics.get(index), true);
-            if (index < gattCharacteristics.size() - 1)
-                readCharacteristic(gattCharacteristics.get(++index));
-            else
-                index = 0;
+//            if (index < gattCharacteristics.size() - 1)
+//                readCharacteristic(gattCharacteristics.get(++index));
+//            else
+//                index = 0;
         }
 
         @Override
@@ -137,6 +136,7 @@ public class BluetoothLeService extends Service {
             broadcastUpdate(Constants.Gatt.ACTION_DATA_AVAILABLE, characteristic);
         }
     };
+    private int index = 0;
 
     private void broadcastUpdate(final String action) {
         final Intent intent = new Intent(action);
@@ -301,12 +301,12 @@ public class BluetoothLeService extends Service {
             return;
         }
 
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to Blood Pressure.
         if (Util.getUUID(Constants.Gatt.BLOOD_PRESSURE_MEASUREMENT).equals(characteristic.getUuid()) ||
                 Util.getUUID(Constants.Gatt.INTERMEDIATE_CUFF_PRESSURE).equals(characteristic.getUuid())) {
             Log.i(TAG, "Found Blood Pressure Characteristics");
+            mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(Constants.Gatt.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

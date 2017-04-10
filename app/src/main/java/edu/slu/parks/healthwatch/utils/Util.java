@@ -3,6 +3,7 @@ package edu.slu.parks.healthwatch.utils;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -11,6 +12,8 @@ import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.fragments.graph.BarGraphFragment;
 import edu.slu.parks.healthwatch.fragments.graph.LineGraphFragment;
 import edu.slu.parks.healthwatch.fragments.graph.TableFragment;
+import edu.slu.parks.healthwatch.help.IHelp;
+import edu.slu.parks.healthwatch.help.Info;
 import edu.slu.parks.healthwatch.model.EmailMessage;
 import edu.slu.parks.healthwatch.model.calendar.DayView;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
@@ -18,13 +21,13 @@ import edu.slu.parks.healthwatch.model.calendar.IGraph;
 import edu.slu.parks.healthwatch.model.calendar.MonthView;
 import edu.slu.parks.healthwatch.model.calendar.WeekView;
 import edu.slu.parks.healthwatch.model.calendar.YearView;
+import edu.slu.parks.healthwatch.model.section.HealthSection;
+import edu.slu.parks.healthwatch.model.section.HelpSection;
+import edu.slu.parks.healthwatch.model.section.HistorySection;
+import edu.slu.parks.healthwatch.model.section.ISection;
+import edu.slu.parks.healthwatch.model.section.MeasureSection;
+import edu.slu.parks.healthwatch.model.section.SettingsSection;
 import edu.slu.parks.healthwatch.security.IPreference;
-import edu.slu.parks.healthwatch.views.HealthSection;
-import edu.slu.parks.healthwatch.views.HelpSection;
-import edu.slu.parks.healthwatch.views.HistorySection;
-import edu.slu.parks.healthwatch.views.ISection;
-import edu.slu.parks.healthwatch.views.MeasureSection;
-import edu.slu.parks.healthwatch.views.SettingsSection;
 
 /**
  * Created by okori on 18-Nov-16.
@@ -97,5 +100,12 @@ public class Util {
 
     public static UUID getUUID(String name) {
         return UUID.fromString(name);
+    }
+
+    public static Collection<IHelp> getHelpList() {
+        List<IHelp> list = new ArrayList<>();
+        list.add(new Info());
+
+        return list;
     }
 }

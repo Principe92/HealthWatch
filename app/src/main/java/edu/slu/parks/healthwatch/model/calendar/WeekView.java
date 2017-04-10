@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.database.Table;
-import edu.slu.parks.healthwatch.model.ViewType;
+import edu.slu.parks.healthwatch.history.ViewType;
 
 /**
  * Created by okori on 20-Nov-16.

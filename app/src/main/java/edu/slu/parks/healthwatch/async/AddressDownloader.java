@@ -39,7 +39,7 @@ public class AddressDownloader {
     }
 
     private boolean cancelPotentialDownload(Record record) {
-        AddressTask addressTask = getBitmapDownloaderTask(record);
+        AddressTask addressTask = getAddressTask(record);
 
         if (addressTask != null) {
             String taskId = addressTask.id;
@@ -56,9 +56,9 @@ public class AddressDownloader {
         return true;
     }
 
-    private AddressTask getBitmapDownloaderTask(Record textView) {
-        if (textView != null) {
-            AddressTask task = tasks.get(textView.id);
+    private AddressTask getAddressTask(Record record) {
+        if (record != null) {
+            AddressTask task = tasks.get(record.id);
             if (task != null) {
                 return task;
             }

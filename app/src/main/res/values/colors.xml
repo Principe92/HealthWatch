@@ -14,4 +14,8 @@
     <color name="pressure_high_2">#FF9800</color>
     <color name="pressure_high_crises">#F44336</color>
 
+    <color name="article_link">#E8EAF6</color>
+
+    <color name="black_overlay">#66000000</color>
+
 </resources>

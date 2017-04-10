@@ -15,4 +15,9 @@ public class PreHypertension implements IPressure {
     public int getColor() {
         return R.color.pressure_pre;
     }
+
+    @Override
+    public String toString() {
+        return "PreHypertension";
+    }
 }

@@ -63,8 +63,8 @@ public class BarGraphFragment extends BaseGraphFragment implements IGraph, Colum
             for (int i = 0; i < size; i++) {
                 Record r = records.get(i);
 
-                sys.add(new SubcolumnValue((float) r.systolic, ContextCompat.getColor(getContext(), PressureType.GetType(r.systolic).getColor())));
-                dias.add(new SubcolumnValue((float) r.diastolic, ContextCompat.getColor(getContext(), PressureType.GetType(r.systolic).getColor())));
+                sys.add(new SubcolumnValue((float) r.systolic, ContextCompat.getColor(getContext(), PressureType.GetType(r.diastolic).getColor())));
+                dias.add(new SubcolumnValue((float) r.diastolic, ContextCompat.getColor(getContext(), PressureType.GetType(r.diastolic).getColor())));
 
                 xAxisValues.add(new AxisValue(calendarView.getXAxisValue(r.date)));
 

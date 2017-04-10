@@ -2,7 +2,7 @@ package edu.slu.parks.healthwatch.model.calendar;
 
 import org.joda.time.DateTime;
 
-import edu.slu.parks.healthwatch.model.ViewType;
+import edu.slu.parks.healthwatch.history.ViewType;
 
 /**
  * Created by okori on 20-Nov-16.

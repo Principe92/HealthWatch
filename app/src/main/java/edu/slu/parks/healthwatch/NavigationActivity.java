@@ -10,9 +10,9 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import edu.slu.parks.healthwatch.model.section.ISection;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.utils.Util;
-import edu.slu.parks.healthwatch.views.ISection;
 
 /**
  * Created by okorie on 14-Nov-16.

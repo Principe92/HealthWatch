@@ -1,7 +1,6 @@
 package edu.slu.parks.healthwatch;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -16,26 +15,17 @@ import android.widget.Toast;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;
-import edu.slu.parks.healthwatch.fragments.HealthFragment;
-import edu.slu.parks.healthwatch.fragments.HelpFragment;
-import edu.slu.parks.healthwatch.fragments.HistoryFragment;
-import edu.slu.parks.healthwatch.fragments.MeasureFragment;
 import edu.slu.parks.healthwatch.model.IAddressReceiver;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
+import edu.slu.parks.healthwatch.model.section.ISection;
 import edu.slu.parks.healthwatch.utils.AddressResultReceiver;
 import edu.slu.parks.healthwatch.utils.Constants;
 import edu.slu.parks.healthwatch.utils.FetchAddressIntentService;
-import edu.slu.parks.healthwatch.views.ISection;
 
 
 public class HomeActivity extends NavigationActivity
-        implements
-        MeasureFragment.OnFragmentInteractionListener,
-        HelpFragment.OnFragmentInteractionListener,
-        HealthFragment.OnFragmentInteractionListener,
-        HistoryFragment.OnFragmentInteractionListener,
-        IAddressReceiver {
+        implements IAddressReceiver {
 
     private Record record;
     private AddressResultReceiver addressResultReceiver;
@@ -161,13 +151,7 @@ public class HomeActivity extends NavigationActivity
         return R.layout.activity_home;
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onHistoryButtonClick() {
+    private void onHistoryButtonClick() {
         ISection section = getSection(R.id.nav_history);
 
         if (section != null)

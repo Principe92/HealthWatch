@@ -35,10 +35,7 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
-
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_item, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.table_item, parent, false));
     }
 
     @Override
@@ -51,10 +48,11 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.View
         String cmt = record.comment != null ? record.comment : "";
         holder.commentView.setText(cmt);
         holder.dateView.setText(joda.toString(Constants.DATE_FORMAT, record.date));
+        holder.statusView.setText(String.format("Status: %s", PressureType.GetType(record.diastolic).toString()));
 
         addressDownloader.download(record, holder.locationView);
 
-        holder.card.setBackgroundResource(PressureType.GetType(record.systolic).getColor());
+        holder.card.setBackgroundResource(PressureType.GetType(record.diastolic).getColor());
     }
 
     @Override
@@ -68,6 +66,7 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.View
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        TextView statusView;
         TextView systolicView;
         TextView diastolicView;
         TextView locationView;
@@ -84,6 +83,7 @@ public class TableListAdapter extends RecyclerView.Adapter<TableListAdapter.View
             locationView = (TextView) itemView.findViewById(R.id.txt_location);
             commentView = (TextView) itemView.findViewById(R.id.txt_comment);
             dateView = (TextView) itemView.findViewById(R.id.txt_date);
+            statusView = (TextView) itemView.findViewById(R.id.txt_status);
         }
     }
 

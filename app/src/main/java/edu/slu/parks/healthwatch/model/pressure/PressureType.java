@@ -13,11 +13,11 @@ public enum PressureType {
     HIGH_BLOOD_PRESSURE_CRISIS;
 
     public static IPressure GetType(int value) {
-        if (value < 80) return new LowPressure();
-        else if (value < 120) return new NormalPressure();
-        else if (value < 139) return new PreHypertension();
-        else if (value < 159) return new FirstHighBloodPressure();
-        else if (value <= 180) return new SecondHighBloodPressure();
+        if (value < 60) return new LowPressure();
+        else if (value < 80) return new NormalPressure();
+        else if (value < 90) return new PreHypertension();
+        else if (value < 100) return new FirstHighBloodPressure();
+        else if (value <= 110) return new SecondHighBloodPressure();
         else return new CriticalPressure();
     }
 }

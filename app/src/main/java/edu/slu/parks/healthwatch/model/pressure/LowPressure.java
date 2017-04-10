@@ -15,4 +15,9 @@ public class LowPressure implements IPressure {
     public int getColor() {
         return R.color.pressure_low;
     }
+
+    @Override
+    public String toString() {
+        return "Low Blood Pressure";
+    }
 }

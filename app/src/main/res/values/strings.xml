@@ -170,4 +170,12 @@
     <string name="yes">Yes</string>
     <string name="use_my_fingerprint">Use my fingerprint</string>
     <string name="no_bluetooth">Device does not support bluetooth</string>
+    <string name="debug">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam neque mi, venenatis non ex non, vestibulum dapibus neque. Vestibulum eu tempor nisi</string>
+    <string name="debug_link">http://www.lipsum.com/feed/html</string>
+    <string name="menu_refresh">Refresh</string>
+
+    <string name="title_activity_help">Help</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="open">open</string>
 </resources>

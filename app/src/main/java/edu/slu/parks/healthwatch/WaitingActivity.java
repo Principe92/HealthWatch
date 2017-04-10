@@ -13,8 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,10 +27,10 @@ import edu.slu.parks.healthwatch.bluetooth.GattBluetooth;
 import edu.slu.parks.healthwatch.bluetooth.IBluetooth;
 import edu.slu.parks.healthwatch.bluetooth.OtherBluetooth;
 import edu.slu.parks.healthwatch.bluetooth.Phase;
+import edu.slu.parks.healthwatch.fragments.AlertDialogFragment;
 import edu.slu.parks.healthwatch.model.ILocation;
 import edu.slu.parks.healthwatch.model.MyLocation;
 import edu.slu.parks.healthwatch.utils.Constants;
-import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 
 public class WaitingActivity extends BaseActivity implements AlertDialogFragment.Listener,
         GoogleApiClient.ConnectionCallbacks,
@@ -55,9 +53,7 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.measure);
-        setSupportActionBar(toolbar);
+        setUpToolbar(R.string.measure);
 
         pressureView = (TextView) findViewById(R.id.txt_pressure);
         statusView = (TextView) findViewById(R.id.status);
@@ -72,8 +68,6 @@ public class WaitingActivity extends BaseActivity implements AlertDialogFragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
-        Log.d(getLocalClassName(), "includeLocation: " + includeLocation);
     }
 
     @Override

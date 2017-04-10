@@ -21,18 +21,15 @@ import edu.slu.parks.healthwatch.model.calendar.GraphListener;
 import edu.slu.parks.healthwatch.model.calendar.GraphType;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
 import edu.slu.parks.healthwatch.model.calendar.IGraph;
-import edu.slu.parks.healthwatch.utils.Constants;
 
 
 public class TableFragment extends Fragment implements IGraph {
 
-    private GraphType graphType;
     private IDate joda;
     private GraphListener mListener;
     private View defaultView;
     private RecyclerView mRecyclerView;
     private TableListAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     public void onAttach(Context context) {
@@ -48,10 +45,6 @@ public class TableFragment extends Fragment implements IGraph {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            graphType = GraphType.toEnum(getArguments().getInt(Constants.GRAPH_TYPE, 0));
-        }
 
         joda = new JodaDate(getActivity());
     }
@@ -72,7 +65,7 @@ public class TableFragment extends Fragment implements IGraph {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)

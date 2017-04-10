@@ -15,4 +15,9 @@ public class FirstHighBloodPressure implements IPressure {
     public int getColor() {
         return R.color.pressure_high_1;
     }
+
+    @Override
+    public String toString() {
+        return "Hypertension Stage 1";
+    }
 }

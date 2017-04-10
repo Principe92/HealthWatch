@@ -9,10 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -31,10 +29,10 @@ import org.joda.time.DateTime;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;
+import edu.slu.parks.healthwatch.fragments.AlertDialogFragment;
 import edu.slu.parks.healthwatch.model.ILocation;
 import edu.slu.parks.healthwatch.model.MyLocation;
 import edu.slu.parks.healthwatch.utils.Constants;
-import edu.slu.parks.healthwatch.views.AlertDialogFragment;
 
 public class RecordActivity extends BaseActivity implements AlertDialogFragment.Listener,
         GoogleApiClient.ConnectionCallbacks,
@@ -59,8 +57,7 @@ public class RecordActivity extends BaseActivity implements AlertDialogFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setUpToolbar(R.string.title_activity_record);
 
         JodaTimeAndroid.init(this);
 
@@ -83,28 +80,26 @@ public class RecordActivity extends BaseActivity implements AlertDialogFragment.
                 .build();
 
         commentView = (EditText) findViewById(R.id.txt_comment);
-        TextView systolicView = (TextView) findViewById(R.id.layout_reading_systolic).findViewById(R.id.txt_record_pressure);
-        TextView diastolicView = (TextView) findViewById(R.id.layout_reading_diastolic).findViewById(R.id.txt_record_pressure);
         ((TextView) findViewById(R.id.layout_reading_systolic).findViewById(R.id.txt_reading)).setText(R.string.systolic_text);
 
-        systolicView.setText(String.valueOf(systolic));
-        diastolicView.setText(String.valueOf(diastolic));
+        ((TextView) findViewById(R.id.layout_reading_systolic)
+                .findViewById(R.id.txt_record_pressure)).setText(String.valueOf(systolic));
+        ((TextView) findViewById(R.id.layout_reading_diastolic)
+                .findViewById(R.id.txt_record_pressure)).setText(String.valueOf(diastolic));
 
-        Button saveBtn = (Button) findViewById(R.id.btn_save);
-        Button repeatBtn = (Button) findViewById(R.id.btn_repeat);
         locationView = (CheckBox) findViewById(R.id.box_location);
 
-        saveBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveToDatabase();
+                saveResultToDb();
             }
         });
 
-        repeatBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_repeat).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                repeat();
+                repeatMeasurement();
             }
         });
 
@@ -154,7 +149,7 @@ public class RecordActivity extends BaseActivity implements AlertDialogFragment.
         }
     }
 
-    private void saveToDatabase() {
+    private void saveResultToDb() {
         record.systolic = systolic;
         record.diastolic = diastolic;
         record.comment = String.valueOf(commentView.getText());
@@ -203,7 +198,7 @@ public class RecordActivity extends BaseActivity implements AlertDialogFragment.
         startActivity(intent);
     }
 
-    private void repeat() {
+    private void repeatMeasurement() {
         Intent intent = new Intent(this, WaitingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -264,7 +259,7 @@ public class RecordActivity extends BaseActivity implements AlertDialogFragment.
             mGoogleApiClient.disconnect();
         }
 
-        if (saveToDatabase) saveToDatabase();
+        if (saveToDatabase) saveResultToDb();
     }
 
     private void updateLocation() {

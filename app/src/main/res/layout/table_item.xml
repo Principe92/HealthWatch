@@ -41,6 +41,14 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txt_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="16dp"
+                android:drawableStart="@mipmap/ic_info_black_24dp"
+                android:padding="8dp" />
+
+            <TextView
                 android:id="@+id/txt_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,6 +71,7 @@
                 android:drawablePadding="16dp"
                 android:drawableStart="@mipmap/ic_comment_black_24dp"
                 android:padding="8dp" />
+
 
         </LinearLayout>
 
