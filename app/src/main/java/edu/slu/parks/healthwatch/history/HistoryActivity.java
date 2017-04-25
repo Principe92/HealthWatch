@@ -34,7 +34,7 @@ import edu.slu.parks.healthwatch.async.RecordListTask;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;
-import edu.slu.parks.healthwatch.fragments.graph.RecordFragment;
+import edu.slu.parks.healthwatch.history.graph.RecordFragment;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
 import edu.slu.parks.healthwatch.model.calendar.GraphListener;

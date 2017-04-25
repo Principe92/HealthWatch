@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        tools:context="edu.slu.parks.healthwatch.fragments.graph.TableFragment" />
+        tools:context="edu.slu.parks.healthwatch.history.graph.TableFragment" />
 
     <include
         android:id="@+id/no_record"

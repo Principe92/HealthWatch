@@ -137,7 +137,7 @@ public class GattBluetooth extends BluetoothGattCallback implements IBluetooth {
     private void connectToDevice() {
         mDeviceAddress = preference.getString(Constants.MAC);
 
-        BluetoothDevice device = !Util.isNullorEmpty(mDeviceAddress) ? adapter.getRemoteDevice(mDeviceAddress) : null;
+        BluetoothDevice device = !Util.isNullOrEmpty(mDeviceAddress) ? adapter.getRemoteDevice(mDeviceAddress) : null;
 
         if (device == null) {
             adapter.startLeScan(leScanCallback);

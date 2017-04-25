@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context="edu.slu.parks.healthwatch.fragments.graph.RecordFragment">
+    tools:context="edu.slu.parks.healthwatch.history.graph.RecordFragment">
 
     <TextView
         android:id="@+id/txt_systolic"

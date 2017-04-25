@@ -9,11 +9,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.fragments.graph.BarGraphFragment;
-import edu.slu.parks.healthwatch.fragments.graph.LineGraphFragment;
-import edu.slu.parks.healthwatch.fragments.graph.TableFragment;
 import edu.slu.parks.healthwatch.help.IHelp;
 import edu.slu.parks.healthwatch.help.Info;
+import edu.slu.parks.healthwatch.history.graph.BarGraphFragment;
+import edu.slu.parks.healthwatch.history.graph.LineGraphFragment;
+import edu.slu.parks.healthwatch.history.graph.TableFragment;
 import edu.slu.parks.healthwatch.model.EmailMessage;
 import edu.slu.parks.healthwatch.model.calendar.DayView;
 import edu.slu.parks.healthwatch.model.calendar.ICalendarView;
@@ -90,7 +90,7 @@ public class Util {
         return new EmailMessage(to, from, header, message);
     }
 
-    public static boolean isNullorEmpty(String mac) {
+    public static boolean isNullOrEmpty(String mac) {
         return mac == null || mac.isEmpty();
     }
 

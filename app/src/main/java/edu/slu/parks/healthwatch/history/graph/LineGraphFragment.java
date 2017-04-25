@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.fragments.graph;
+package edu.slu.parks.healthwatch.history.graph;
 
 
 import android.graphics.Color;

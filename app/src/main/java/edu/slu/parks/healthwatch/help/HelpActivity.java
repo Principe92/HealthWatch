@@ -42,7 +42,7 @@ public class HelpActivity extends NavigationActivity {
         final HelpListAdapter mAdapter = new HelpListAdapter(new IHelpListAdapterListener() {
             @Override
             public void onClick(IHelp help) {
-                help.onClick();
+                help.onClick(HelpActivity.this.getApplicationContext());
             }
         });
         mainView.setAdapter(mAdapter);

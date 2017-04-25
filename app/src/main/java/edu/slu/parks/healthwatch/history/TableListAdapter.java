@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.adapter;
+package edu.slu.parks.healthwatch.history;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

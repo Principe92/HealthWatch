@@ -58,6 +58,7 @@ public class Constants {
     public static final String MAC = "macAddress";
     public static final String ARTICLE_URL = "article_url";
     public static final String ARTICLE_TITLE = "article_title";
+    public static final String PDF_MIME_TYPE = "application/pdf";
 
     public static class Gatt {
         public static final String GENERIC_ACCESS_SERVICE = "00001800-0000-1000-8000-00805f9b34fb";

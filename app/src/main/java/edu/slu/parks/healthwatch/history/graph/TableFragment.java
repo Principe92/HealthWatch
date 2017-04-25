@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.fragments.graph;
+package edu.slu.parks.healthwatch.history.graph;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.adapter.TableListAdapter;
 import edu.slu.parks.healthwatch.database.Record;
+import edu.slu.parks.healthwatch.history.TableListAdapter;
 import edu.slu.parks.healthwatch.model.IDate;
 import edu.slu.parks.healthwatch.model.JodaDate;
 import edu.slu.parks.healthwatch.model.calendar.GraphListener;

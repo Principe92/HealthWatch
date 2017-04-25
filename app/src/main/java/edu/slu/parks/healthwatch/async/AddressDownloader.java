@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -44,7 +45,7 @@ public class AddressDownloader {
         if (addressTask != null) {
             String taskId = addressTask.id;
 
-            if ((taskId == null) || (!taskId.equals(String.valueOf(record.id)))) {
+            if ((taskId == null) || (!taskId.equalsIgnoreCase(String.valueOf(record.id)))) {
                 addressTask.cancel(true);
                 tasks.remove(record.id);
             } else {
@@ -58,10 +59,7 @@ public class AddressDownloader {
 
     private AddressTask getAddressTask(Record record) {
         if (record != null) {
-            AddressTask task = tasks.get(record.id);
-            if (task != null) {
-                return task;
-            }
+            return tasks.get(record.id);
         }
 
         return null;
@@ -110,6 +108,7 @@ public class AddressDownloader {
                 TextView view = location.get();
 
                 if (view != null) {
+                    Log.i(this.getClass().getName(), "Address ready for: " + id);
                     view.setText(s);
                 }
             }
