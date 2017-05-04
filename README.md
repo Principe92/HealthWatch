@@ -16,3 +16,9 @@ Settings: In this section, the patient will choose between manual or automatic m
 
 Check the screenshot folder
 
+# Participants
+1. Princewill Okorie
+2. Tej Sura
+3. Matthew Thorsteinson
+4. Joseph Vicini
+
