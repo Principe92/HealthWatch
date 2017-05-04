@@ -13,8 +13,6 @@ import java.util.Collection;
 
 import edu.slu.parks.healthwatch.NavigationActivity;
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.listener.IArticleTaskListener;
-import edu.slu.parks.healthwatch.listener.IHealthListAdapterListener;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 public class HealthActivity extends NavigationActivity {

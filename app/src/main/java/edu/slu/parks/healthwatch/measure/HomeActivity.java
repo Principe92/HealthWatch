@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.measure;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import edu.slu.parks.healthwatch.NavigationActivity;
+import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;

@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.slu.parks.healthwatch.listener.IArticleTaskListener;
-
 /**
  * Created by okori on 08-Apr-17.
  */

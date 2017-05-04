@@ -1,8 +1,6 @@
-package edu.slu.parks.healthwatch.listener;
+package edu.slu.parks.healthwatch.health;
 
 import java.util.Collection;
-
-import edu.slu.parks.healthwatch.health.Article;
 
 /**
  * Created by okori on 08-Apr-17.

@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.fragments;
+package edu.slu.parks.healthwatch.authentication;
 
 
 import android.content.Context;

@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.measure;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -22,6 +22,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import edu.slu.parks.healthwatch.BaseActivity;
+import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.bluetooth.ConnectThread;
 import edu.slu.parks.healthwatch.bluetooth.GattBluetooth;
 import edu.slu.parks.healthwatch.bluetooth.IBluetooth;

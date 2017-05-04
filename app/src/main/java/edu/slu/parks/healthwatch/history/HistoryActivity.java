@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +28,6 @@ import java.util.Locale;
 
 import edu.slu.parks.healthwatch.NavigationActivity;
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.adapter.GraphPagerAdapter;
 import edu.slu.parks.healthwatch.async.RecordListTask;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
@@ -50,7 +48,6 @@ public class HistoryActivity extends NavigationActivity
 
     private AppBarLayout mAppBarLayout;
     private IDate date;
-    private List<IGraph> graphs;
     private CompactCalendarView mCompactCalendarView;
     private RecordListTask currentTask;
     private IHealthDb healthDb;
@@ -68,7 +65,6 @@ public class HistoryActivity extends NavigationActivity
         super.onCreate(savedInstanceState);
 
         calendarViews = Util.buildCalendarViews();
-        graphs = Util.buildGraphs();
 
         if (savedInstanceState != null) {
             selectedDate = new DateTime(savedInstanceState.getString(Constants.SELECTED_DATE));
@@ -103,19 +99,9 @@ public class HistoryActivity extends NavigationActivity
         mCompactCalendarView.setLocale(java.util.TimeZone.getDefault(), Locale.ENGLISH);
         mCompactCalendarView.setShouldDrawDaysHeader(true);
         mCompactCalendarView.setListener(this);
-        ((AppBarLayout) findViewById(R.id.app_bar_layout)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if ((Math.abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) && !isExpanded) {
-//                    isExpanded = false;
-//                    ViewCompat.animate(arrow).rotation(0).start();
-                    //   Toast.makeText(getApplicationContext(), "Collapsed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(new GraphPagerAdapter(getSupportFragmentManager(), graphs));
+        mViewPager.setAdapter(new GraphPagerAdapter(getSupportFragmentManager(), Util.buildGraphs()));
         mViewPager.setPageTransformer(true, new DepthPageTransformer());
 
 
@@ -220,7 +206,6 @@ public class HistoryActivity extends NavigationActivity
 
     @Override
     public void showRecordDetails(int index) {
-        Log.d(getClass().getName(), "record id: " + index);
         Record record = this.records.get(index);
 
         if (record != null) {

@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 
 import edu.slu.parks.healthwatch.NavigationActivity;
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.listener.IHelpListAdapterListener;
 import edu.slu.parks.healthwatch.utils.Util;
 
 public class HelpActivity extends NavigationActivity {

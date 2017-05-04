@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.authentication.SignUpFragment;
 import edu.slu.parks.healthwatch.utils.Util;
 
 /**

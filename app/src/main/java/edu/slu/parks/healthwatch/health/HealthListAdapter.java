@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.slu.parks.healthwatch.R;
-import edu.slu.parks.healthwatch.listener.IHealthListAdapterListener;
 import edu.slu.parks.healthwatch.model.BaseRecyclerAdapter;
 
 /**

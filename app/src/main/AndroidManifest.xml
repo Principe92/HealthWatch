@@ -31,35 +31,35 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
         <activity
-            android:name=".HomeActivity"
+            android:name=".measure.HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".HomeActivity">
+            android:parentActivityName=".measure.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+                android:value="edu.slu.parks.healthwatch.measure.HomeActivity" />
         </activity>
         <activity
-            android:name=".WaitingActivity"
+            android:name=".measure.WaitingActivity"
             android:label="@string/title_activity_waiting"
-            android:parentActivityName=".HomeActivity"
+            android:parentActivityName=".measure.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+                android:value="edu.slu.parks.healthwatch.measure.HomeActivity" />
         </activity>
         <activity
-            android:name=".RecordActivity"
+            android:name=".measure.RecordActivity"
             android:label="@string/title_activity_record"
             android:noHistory="true"
-            android:parentActivityName=".HomeActivity"
+            android:parentActivityName=".measure.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+                android:value="edu.slu.parks.healthwatch.measure.HomeActivity" />
         </activity>
         <activity
             android:name=".SplashActivity"
@@ -86,14 +86,14 @@
         <activity
             android:name=".health.HealthActivity"
             android:label="@string/title_activity_health"
-            android:parentActivityName=".HomeActivity"
+            android:parentActivityName=".measure.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.slu.parks.healthwatch.HomeActivity" />
+                android:value="edu.slu.parks.healthwatch.measure.HomeActivity" />
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".authentication.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true" />
         <activity
@@ -102,7 +102,7 @@
         <activity
             android:name=".help.HelpActivity"
             android:label="@string/title_activity_help"
-            android:parentActivityName=".HomeActivity"
+            android:parentActivityName=".measure.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <provider

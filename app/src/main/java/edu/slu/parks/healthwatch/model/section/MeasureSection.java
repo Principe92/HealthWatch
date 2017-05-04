@@ -3,8 +3,8 @@ package edu.slu.parks.healthwatch.model.section;
 import android.app.Activity;
 import android.content.Intent;
 
-import edu.slu.parks.healthwatch.HomeActivity;
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.measure.HomeActivity;
 import edu.slu.parks.healthwatch.utils.Constants;
 
 /**

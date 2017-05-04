@@ -10,6 +10,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.io.File;
 
+import edu.slu.parks.healthwatch.authentication.LoginActivity;
 import edu.slu.parks.healthwatch.security.PinManager;
 import edu.slu.parks.healthwatch.utils.Constants;
 

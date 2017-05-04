@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.measure;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,6 +26,8 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTime;
 
+import edu.slu.parks.healthwatch.BaseActivity;
+import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.database.HealthDb;
 import edu.slu.parks.healthwatch.database.IHealthDb;
 import edu.slu.parks.healthwatch.database.Record;

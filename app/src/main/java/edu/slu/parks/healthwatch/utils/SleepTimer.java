@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
 
-import edu.slu.parks.healthwatch.LoginActivity;
+import edu.slu.parks.healthwatch.authentication.LoginActivity;
 
 /**
  * Created by okori on 09-Jan-17.

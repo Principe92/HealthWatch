@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch;
+package edu.slu.parks.healthwatch.authentication;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 import com.noelchew.sparkpostutil.library.EmailListener;
 
+import edu.slu.parks.healthwatch.R;
 import edu.slu.parks.healthwatch.fragments.EmailFragment;
-import edu.slu.parks.healthwatch.fragments.SignInFragment;
-import edu.slu.parks.healthwatch.fragments.SignUpFragment;
+import edu.slu.parks.healthwatch.measure.HomeActivity;
 import edu.slu.parks.healthwatch.security.IPinManager;
 import edu.slu.parks.healthwatch.security.IPreference;
 import edu.slu.parks.healthwatch.security.PinManager;

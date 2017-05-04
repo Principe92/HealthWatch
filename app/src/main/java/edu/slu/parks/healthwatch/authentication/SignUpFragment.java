@@ -1,4 +1,4 @@
-package edu.slu.parks.healthwatch.fragments;
+package edu.slu.parks.healthwatch.authentication;
 
 
 import android.annotation.TargetApi;
@@ -21,8 +21,8 @@ import com.andrognito.pinlockview.IndicatorDots;
 import com.andrognito.pinlockview.PinLockListener;
 import com.andrognito.pinlockview.PinLockView;
 
-import edu.slu.parks.healthwatch.HomeActivity;
 import edu.slu.parks.healthwatch.R;
+import edu.slu.parks.healthwatch.measure.HomeActivity;
 import edu.slu.parks.healthwatch.security.FingerPrint;
 import edu.slu.parks.healthwatch.security.IFingerPrint;
 import edu.slu.parks.healthwatch.security.IPinManager;
